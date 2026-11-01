@@ -26,7 +26,7 @@ Também passaram os seis testes unitários de `UsuarioService`, três testes de 
 
 - As requisições dos testes usam MockMvc, sem abrir uma porta HTTP; a persistência usa PostgreSQL real.
 - A tradução da violação de unicidade do banco foi inicialmente coberta por teste unitário com repositório simulado. A verificação posterior com transações reais está registrada abaixo.
-- Como os cadastros dos testes sofrem rollback, eles não demonstram persistência de um cadastro confirmado após reiniciar o backend ou o banco. Essa verificação ainda está pendente.
+- Como os cadastros desses testes sofrem rollback, eles não demonstram persistência após reinício. A verificação posterior de reinício do backend está registrada abaixo; o reinício do banco continua pendente.
 - Não houve teste de frontend; a interface ainda não foi implementada.
 
 ## 01/11/2026 - Concorrência no cadastro (P2)
@@ -50,4 +50,20 @@ Também passaram os seis testes unitários de `UsuarioService`, três testes de 
 
 - O transporte HTTP é simulado pelo MockMvc; as transações e o banco são reais.
 - O cenário verifica duas requisições concorrentes, não desempenho ou carga.
-- A persistência após reiniciar a aplicação ou o banco continua pendente.
+- A persistência após reiniciar o backend foi verificada posteriormente, conforme o registro abaixo. Reiniciar o banco ainda não foi verificado.
+
+## 01/11/2026 - Persistência após reiniciar o backend (P2)
+
+- Verificação manual automatizada por PowerShell, com HTTP real na porta temporária 18080 e PostgreSQL real em `localhost:5433`.
+- As instâncias temporárias foram iniciadas dentro de `backend`, com `DB_PASSWORD` configurada, usando `./mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=18080"`.
+- Após a primeira inicialização (PID 19620), foram obtidos CSRF e sessão e enviado um cadastro fictício com `Invoke-WebRequest`. Resultado: HTTP 201.
+- Uma consulta com `docker compose exec -T db psql -U local_services -d local_services` confirmou o registro pelo UUID retornado: `5b30e99c-1ada-4ed0-a5f6-15acf8a85548`.
+- A primeira instância foi encerrada com Ctrl+C; foi confirmado que o processo terminou e a porta 18080 ficou livre.
+- Uma nova instância foi iniciada com o mesmo comando (PID 26264), sem recriar ou reiniciar o banco.
+- Após obter nova sessão e novo CSRF, a repetição do cadastro retornou HTTP 409. Uma consulta direta confirmou o mesmo UUID persistido.
+- Limpeza: foi removido somente o registro fictício, filtrando por seu UUID e e-mail exclusivo. Resultado: `DELETE 1`; a consulta posterior pelo UUID retornou contagem zero.
+- A segunda instância temporária foi encerrada. A aplicação do IntelliJ e os demais cadastros não foram alterados.
+
+**Resultado:** o cadastro confirmado permanece após reiniciar o processo do backend. Nenhuma alteração no código ou no esquema do banco foi necessária.
+
+**Limite:** o container PostgreSQL não foi reiniciado; esta verificação não comprova persistência após reinício ou recriação do banco. Os logs e os metadados fictícios desta execução ficaram em `backend/target`, ignorado pelo Git.
