@@ -96,6 +96,8 @@ npm.cmd start
 
 Acesse `http://localhost:4200`. Para gerar o build, use `npm.cmd run build`; para executar os testes uma vez, use `npm.cmd test -- --watch=false`.
 
+Durante o desenvolvimento, chamadas `/api/...` passam pelo proxy do Angular para `http://localhost:8080`. Mantenha o backend executando e reinicie o Angular ao alterar `proxy.conf.json`. Para conferir o encaminhamento, acesse `http://localhost:4200/api/v1/health`.
+
 ## Configuração
 
 Credenciais e segredos não devem ser versionados. As configurações locais do banco e, futuramente, das chaves JWT serão fornecidas por variáveis de ambiente e documentadas por arquivos de exemplo sem valores reais.

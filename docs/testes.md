@@ -78,3 +78,14 @@ Também passaram os seis testes unitários de `UsuarioService`, três testes de 
 - Confirmado que não existe `frontend/.git` e que dependências, build e cache estão ignorados pelo Git.
 
 **Limites:** os testes verificam somente a criação do componente principal e o título da página padrão, usando Vitest no ambiente Node/jsdom. Não há telas do Local Services, integração com a API ou verificação de responsividade. A etapa P3 continua em andamento.
+
+## 01/11/2026 - HttpClient e proxy local (P3)
+
+- Habilitado `provideHttpClient()` em `frontend/src/app/app.config.ts`.
+- Adicionado `frontend/proxy.conf.json`: `/api/**` encaminha para `http://localhost:8080`.
+- Configurado `proxyConfig` nas opções de `serve` em `frontend/angular.json`.
+- `npm.cmd run build`: executado pelo assistente após habilitar o HttpClient; build aprovado.
+- Os arquivos JSON do proxy e do workspace foram lidos e validados após as alterações.
+- O responsável reiniciou o Angular e confirmou o funcionamento de `http://localhost:4200/api/v1/health`, conforme o teste manual orientado na conversa. Esse teste HTTP não foi repetido pelo assistente.
+
+**Limites:** confirmado apenas o encaminhamento para o health check. A configuração é do servidor de desenvolvimento; ainda não há telas, envio de cadastro pelo frontend ou fluxo CSRF integrado no Angular.
