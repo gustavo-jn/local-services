@@ -1,4 +1,4 @@
-package io.github.gustavo_jn.local_services_api.conta;
+package io.github.gustavo_jn.local_services_api.conta.validation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -1,4 +1,6 @@
-package io.github.gustavo_jn.local_services_api.conta;
+package io.github.gustavo_jn.local_services_api.conta.repository;
+
+import io.github.gustavo_jn.local_services_api.conta.entity.Usuario;
 
 import java.util.Optional;
 import java.util.UUID;

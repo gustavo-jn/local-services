@@ -1,4 +1,10 @@
-package io.github.gustavo_jn.local_services_api.conta;
+package io.github.gustavo_jn.local_services_api.conta.service;
+
+import io.github.gustavo_jn.local_services_api.conta.entity.Usuario;
+import io.github.gustavo_jn.local_services_api.conta.repository.UsuarioRepository;
+import io.github.gustavo_jn.local_services_api.conta.dto.CadastroUsuarioRequestDTO;
+import io.github.gustavo_jn.local_services_api.conta.dto.UsuarioResponseDTO;
+import io.github.gustavo_jn.local_services_api.conta.exception.EmailJaCadastradoException;
 
 import java.util.Locale;
 

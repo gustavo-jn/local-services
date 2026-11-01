@@ -1,4 +1,6 @@
-package io.github.gustavo_jn.local_services_api.conta;
+package io.github.gustavo_jn.local_services_api.conta.dto;
+
+import io.github.gustavo_jn.local_services_api.conta.validation.SenhaDentroDoLimite;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

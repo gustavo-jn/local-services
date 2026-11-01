@@ -1,4 +1,6 @@
-package io.github.gustavo_jn.local_services_api.conta;
+package io.github.gustavo_jn.local_services_api.conta.validation;
+
+import io.github.gustavo_jn.local_services_api.conta.dto.CadastroUsuarioRequestDTO;
 
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;

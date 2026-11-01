@@ -1,4 +1,4 @@
-package io.github.gustavo_jn.local_services_api.conta;
+package io.github.gustavo_jn.local_services_api.conta.entity;
 
 import java.util.UUID;
 

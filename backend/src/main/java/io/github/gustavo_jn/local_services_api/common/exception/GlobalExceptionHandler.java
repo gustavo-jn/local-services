@@ -14,7 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import io.github.gustavo_jn.local_services_api.conta.EmailJaCadastradoException;
+import io.github.gustavo_jn.local_services_api.conta.exception.EmailJaCadastradoException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

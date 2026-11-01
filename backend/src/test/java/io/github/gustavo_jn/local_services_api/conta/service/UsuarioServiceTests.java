@@ -1,4 +1,10 @@
-package io.github.gustavo_jn.local_services_api.conta;
+package io.github.gustavo_jn.local_services_api.conta.service;
+
+import io.github.gustavo_jn.local_services_api.conta.entity.Usuario;
+import io.github.gustavo_jn.local_services_api.conta.repository.UsuarioRepository;
+import io.github.gustavo_jn.local_services_api.conta.dto.CadastroUsuarioRequestDTO;
+import io.github.gustavo_jn.local_services_api.conta.dto.UsuarioResponseDTO;
+import io.github.gustavo_jn.local_services_api.conta.exception.EmailJaCadastradoException;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -35,8 +41,8 @@ class UsuarioServiceTests {
 		String senha = " senha de teste ";
 		when(repository.saveAndFlush(any(Usuario.class))).thenAnswer(invocation -> {
 			Usuario usuario = invocation.getArgument(0);
-			assertTrue(encoder.matches(senha, usuario.getSenhaHash()));
-			assertFalse(encoder.matches(senha.trim(), usuario.getSenhaHash()));
+			assertTrue(encoder.matches(senha, (String) ReflectionTestUtils.getField(usuario, "senhaHash")));
+			assertFalse(encoder.matches(senha.trim(), (String) ReflectionTestUtils.getField(usuario, "senhaHash")));
 			ReflectionTestUtils.setField(usuario, "id", id);
 			return usuario;
 		});
