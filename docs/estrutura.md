@@ -42,3 +42,17 @@ Os testes ficam em `backend/src/test/java`, seguindo os mesmos pacotes das class
 - `common.exception`: formato comum de erro e tratamento centralizado das exceções.
 
 As migrações SQL permanecem em `backend/src/main/resources/db/migration`. A reorganização dos pacotes Java não altera tabelas nem exige uma nova migração.
+
+## Frontend - página inicial
+
+A rota `/` renderiza `frontend/src/app/features/home/`. O HTML e o CSS foram adaptados da página independente fornecida em `site/`, na raiz, preservada como referência local.
+
+- `home.html`: conteúdo e bindings do template Angular.
+- `home.css`: estilos encapsulados da Home, preservando o layout fornecido.
+- `home.ts`: sinais de estado, menu, observadores, animações e limpeza de recursos ao destruir o componente.
+- `home.spec.ts`: testes de navegação local, acessibilidade do menu e ciclo de vida das interações.
+- `frontend/src/styles.css`: base global de documento.
+- `frontend/src/index.html`: idioma e metadados da aplicação.
+- `frontend/public/images/home/`: cópias otimizadas em WebP das cinco imagens fornecidas.
+
+O `script.js` independente não é carregado pela aplicação. Suas interações foram adaptadas para o componente, sem inserir scripts ou listeners permanentes no documento. Os botões de cadastro e login permanecem desativados até as respectivas páginas serem implementadas.

@@ -89,3 +89,21 @@ Também passaram os seis testes unitários de `UsuarioService`, três testes de 
 - O responsável reiniciou o Angular e confirmou o funcionamento de `http://localhost:4200/api/v1/health`, conforme o teste manual orientado na conversa. Esse teste HTTP não foi repetido pelo assistente.
 
 **Limites:** confirmado apenas o encaminhamento para o health check. A configuração é do servidor de desenvolvimento; ainda não há telas, envio de cadastro pelo frontend ou fluxo CSRF integrado no Angular.
+
+## 01/11/2026 - Integração da Home fornecida em `site/` (P3)
+
+- A página independente foi adaptada ao componente Angular existente na rota `/`.
+- Comandos executados dentro de `frontend`: `npm.cmd test -- --watch=false` e `npm.cmd run build`.
+- Resultado final: **2 arquivos, 9 testes aprovados; build de produção aprovado**. Os testes usam Vitest/jsdom, não um navegador real.
+- Os testes da Home verificam título e imagens locais, abertura do menu, fechamento por Escape com retorno de foco, fechamento por âncora/clique externo/mudança de viewport, indisponibilidade dos destinos ainda não implementados, troca de fotografia, pausa, movimento reduzido e limpeza dos observadores e intervalos.
+- No teste de foco, o botão é explicitamente exibido porque o jsdom não aplica a largura móvel às media queries CSS. Isso não comprova a renderização visual do menu em celular.
+- A primeira tentativa de build revelou o limite padrão de 8 kB por componente. O limite foi revisto conforme `docs/decisoes.md`; o build final passou sem erros. Uma falha inicial do teste de foco foi corrigida ajustando a representação do botão móvel no jsdom.
+- Um servidor HTTP estático temporário serviu `frontend/dist/local-services/browser` em `127.0.0.1:4302`: `/` retornou 200 e as cinco imagens retornaram 200 com `Content-Type: image/webp`.
+- Conferidos os destinos das âncoras internas e a existência e integridade das imagens referenciadas. As imagens otimizadas foram abertas para inspeção e os textos alternativos ajustados ao conteúdo.
+- O material original em `site/` foi preservado. Nenhuma mudança no backend, no esquema ou nos dados do PostgreSQL.
+
+### Limites de verificação
+
+- A inspeção visual da página nas larguras 360, 768 e 1366 px ficou pendente: o acesso ao navegador embutido estava indisponível e a ferramenta de uso do computador interrompeu a inspeção por não conseguir determinar a URL atual do Chrome com segurança. Não foi contornado esse bloqueio por outra automação de navegador.
+- Build, testes e HTTP não comprovam ausência de sobreposição ou rolagem horizontal em um navegador real. A conferência visual e o teste em Chrome/Firefox ainda precisam ser feitos.
+- Cadastro e login no frontend seguem pendentes. Os botões estão desativados; não houve teste de autenticação ou cadastro pela interface.

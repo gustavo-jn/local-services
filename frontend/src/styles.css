@@ -1,1 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
+/* Base da aplicação; o visual da Home fica no próprio componente. */
+html { scroll-behavior: smooth; font-size: 16px; }
+body { margin: 0; }
+app-root { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
