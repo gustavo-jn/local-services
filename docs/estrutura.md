@@ -6,6 +6,8 @@ O backend usa o pacote base `io.github.gustavo_jn.local_services_api` e agrupa a
 
 ```text
 conta/
+├── controller/
+│   └── CadastroUsuarioController.java
 ├── dto/
 │   ├── CadastroUsuarioRequestDTO.java
 │   └── UsuarioResponseDTO.java
@@ -22,6 +24,7 @@ conta/
     └── SenhaDentroDoLimiteValidator.java
 ```
 
+- `controller`: requisições HTTP e encaminhamento ao serviço.
 - `dto`: dados de entrada e saída, sem persistência própria.
 - `entity`: entidades mapeadas para o banco por JPA.
 - `exception`: exceções de negócio do módulo.
@@ -29,7 +32,7 @@ conta/
 - `service`: regras de negócio e transações.
 - `validation`: anotações e validadores de entrada.
 
-Os testes ficam em `backend/src/test/java`, seguindo os mesmos pacotes das classes verificadas. Novos subpacotes, como `controller`, serão criados quando houver implementação correspondente.
+Os testes ficam em `backend/src/test/java`, seguindo os mesmos pacotes das classes verificadas. Novos subpacotes serão criados quando houver implementação correspondente.
 
 ## Demais pacotes
 

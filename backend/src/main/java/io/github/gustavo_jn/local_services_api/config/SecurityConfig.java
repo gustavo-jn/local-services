@@ -18,6 +18,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/v1/auth/csrf").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
 						.anyRequest().authenticated())
 				.formLogin(AbstractHttpConfigurer::disable)
 				.httpBasic(AbstractHttpConfigurer::disable)
