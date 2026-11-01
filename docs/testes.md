@@ -67,3 +67,14 @@ Também passaram os seis testes unitários de `UsuarioService`, três testes de 
 **Resultado:** o cadastro confirmado permanece após reiniciar o processo do backend. Nenhuma alteração no código ou no esquema do banco foi necessária.
 
 **Limite:** o container PostgreSQL não foi reiniciado; esta verificação não comprova persistência após reinício ou recriação do banco. Os logs e os metadados fictícios desta execução ficaram em `backend/target`, ignorado pelo Git.
+
+## 01/11/2026 - Estrutura Angular criada manualmente (P3)
+
+- O responsável criou o projeto pelo Angular CLI e moveu seu conteúdo para `frontend`. A pasta adicional `local-services` e o `.gitkeep` foram removidos manualmente.
+- Configuração: componentes standalone, roteamento, CSS, sem SSR e sem integração adicional de ferramentas de IA.
+- Ambiente: Node 26.13.0 e npm 11.20.0. Lockfile conferido: Angular 22.2.4, Angular CLI/Build 22.2.5, TypeScript 6.0.3 e Vitest 5.0.5.
+- `npm.cmd test -- --watch=false`: executado pelo responsável em `frontend`, com saída compartilhada na conversa; **1 arquivo e 2 testes aprovados**, sem falhas (15:56:53, horário local).
+- `npm.cmd run build`: executado pelo assistente em `frontend`; **build de produção aprovado**, com saída em `dist/local-services` (15:57:34, horário local).
+- Confirmado que não existe `frontend/.git` e que dependências, build e cache estão ignorados pelo Git.
+
+**Limites:** os testes verificam somente a criação do componente principal e o título da página padrão, usando Vitest no ambiente Node/jsdom. Não há telas do Local Services, integração com a API ou verificação de responsividade. A etapa P3 continua em andamento.

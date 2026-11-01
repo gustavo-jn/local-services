@@ -4,7 +4,7 @@ Plataforma web para divulgação, busca e contratação de serviços locais. O p
 
 ## Estado atual
 
-O projeto está na etapa inicial de organização e configuração. Neste momento, o backend Spring Boot compila com Java 25, mas a conexão com o PostgreSQL, as migrações, as funcionalidades da API e o frontend ainda serão implementados.
+O backend Spring Boot executa com Java 25, PostgreSQL em Docker e migrações Flyway. Já oferece health check, obtenção de CSRF e cadastro de usuários. O frontend Angular possui a estrutura inicial; as telas e a integração com a API ainda serão implementadas.
 
 ## Tecnologias previstas
 
@@ -38,22 +38,19 @@ O projeto está na etapa inicial de organização e configuração. Neste moment
 ```text
 local-services-api/
 ├── backend/    # aplicação Spring Boot e Maven Wrapper
-├── frontend/   # reservado para a aplicação Angular
+├── frontend/   # aplicação Angular
 ├── docs/       # documentação técnica do projeto
 └── README.md
 ```
 
 ## Pré-requisitos
 
-Para trabalhar com o estado atual do backend:
+Para executar o projeto localmente:
 
 - JDK 25
 - Git
-
-Para as próximas etapas também será necessário:
-
 - Docker com suporte ao Docker Compose
-- Node.js e npm, quando o frontend Angular for criado
+- Node.js 26.13.0 e npm 11.20.0 para o frontend
 
 ## Backend
 
@@ -69,24 +66,35 @@ java --version
 ### Compilar
 
 ```powershell
-.\backend\mvnw.cmd compile
+.\backend\mvnw.cmd -f backend/pom.xml compile
 ```
 
 ### Executar os testes
 
 ```powershell
-.\backend\mvnw.cmd test
+.\backend\mvnw.cmd -f backend/pom.xml test
 ```
 
-Os testes que carregam o contexto completo do Spring dependem da configuração do banco de dados. Enquanto o PostgreSQL e as propriedades JDBC não forem configurados, esses testes poderão falhar durante a criação do `DataSource`.
+Os testes de integração dependem do PostgreSQL em execução e da variável `DB_PASSWORD` configurada no processo.
 
 ### Iniciar a aplicação
 
 ```powershell
-.\backend\mvnw.cmd spring-boot:run
+.\backend\mvnw.cmd -f backend/pom.xml spring-boot:run
 ```
 
-A inicialização completa também depende da configuração do PostgreSQL, que será adicionada na etapa de infraestrutura do projeto.
+Antes de iniciar, suba o banco com `docker compose up -d` e configure `DB_PASSWORD` no terminal ou na configuração de execução do IntelliJ. A senha deve corresponder à do PostgreSQL. O `.env` do Compose não é carregado automaticamente pelo Java.
+
+## Frontend
+
+No terminal, dentro de `frontend`:
+
+```powershell
+npm.cmd ci
+npm.cmd start
+```
+
+Acesse `http://localhost:4200`. Para gerar o build, use `npm.cmd run build`; para executar os testes uma vez, use `npm.cmd test -- --watch=false`.
 
 ## Configuração
 

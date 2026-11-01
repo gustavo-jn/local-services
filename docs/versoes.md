@@ -2,7 +2,7 @@
 
 Este documento registra as versões efetivamente utilizadas no desenvolvimento do Local Services. Ele deve ser atualizado quando uma ferramenta ou tecnologia for adicionada ou alterada.
 
-Última verificação: 31/10/2026.
+Última atualização: 01/11/2026. As versões do frontend foram conferidas no lockfile; os registros anteriores do ambiente foram preservados.
 
 ## Ambiente de desenvolvimento
 
@@ -13,8 +13,8 @@ Este documento registra as versões efetivamente utilizadas no desenvolvimento d
 | Maven Wrapper | 3.10.0 | Verificado | Executado por `backend/mvnw.cmd` |
 | Docker | 29.6.2 | Verificado | Build `dfc4efb` |
 | Docker Compose | 5.3.1 | Verificado | Disponível como `docker compose` |
-| Node.js | 24.14.0 | Verificado | Será usado pelo frontend |
-| npm | 11.9.0 | Verificado | Será usado pelo frontend |
+| Node.js | 26.13.0 LTS | Verificado | Instalado e selecionado pelo fnm |
+| npm | 11.20.0 | Verificado | Registrado também em `frontend/package.json` |
 
 ## Backend
 
@@ -30,14 +30,17 @@ Este documento registra as versões efetivamente utilizadas no desenvolvimento d
 
 | Componente | Versão | Situação | Observação |
 |---|---:|---|---|
-| PostgreSQL | A definir | Pendente | A imagem será fixada no `compose.yaml`; referência inicial: família 17 |
+| PostgreSQL | 17.10 | Verificado | Observado nos testes do backend; o Compose ainda usa a tag móvel `postgres:17` |
 
 ## Frontend
 
 | Componente | Versão | Situação | Observação |
 |---|---:|---|---|
-| Angular | A definir | Pendente | Será definida ao criar o projeto em `frontend/` |
-| TypeScript | A definir | Pendente | Será definida pela versão escolhida do Angular |
+| Angular | 22.2.4 | Instalado | Versão resolvida em `frontend/package-lock.json` |
+| Angular CLI / Build | 22.2.5 | Instalado | Ferramentas locais do frontend; CLI também instalado globalmente |
+| TypeScript | 6.0.3 | Instalado | Versão resolvida no lockfile |
+| RxJS | 7.8.2 | Instalado | Versão resolvida no lockfile |
+| Vitest | 5.0.5 | Instalado | Executor dos testes iniciais |
 
 ## Comandos de verificação
 
@@ -49,11 +52,20 @@ java --version
 docker --version
 docker compose version
 node --version
-npm --version
+npm.cmd --version
 ```
 
 As versões gerenciadas pelo Spring Boot podem ser conferidas pela árvore de dependências do Maven:
 
 ```powershell
-.\backend\mvnw.cmd dependency:tree
+.\backend\mvnw.cmd -f backend/pom.xml dependency:tree
 ```
+
+Para conferir as versões do frontend, executar dentro de `frontend`:
+
+```powershell
+npm.cmd exec -- ng version
+npm.cmd ls --depth=0
+```
+
+O `package.json` mantém os intervalos gerados pelo Angular CLI. O `package-lock.json` registra as versões resolvidas; em um novo clone, usar `npm.cmd ci` para reproduzir essa instalação. Dependências, build e cache não são versionados.
