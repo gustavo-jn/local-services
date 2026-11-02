@@ -59,4 +59,4 @@ O `script.js` independente não é carregado pela aplicação. Suas interações
 
 ## Frontend - cadastro
 
-A rota `/cadastro` renderiza o componente em `frontend/src/app/features/auth/register/`. A tela possui campos para nome, e-mail, senha e confirmação, com validações locais alinhadas aos limites principais do backend. O formulário ainda não chama a API; a obtenção de CSRF, o envio do cadastro e os retornos do servidor serão integrados em uma etapa posterior. A tela de login também não foi implementada.
+A rota `/cadastro` renderiza o componente em `frontend/src/app/features/auth/register/`. A tela possui campos para nome, e-mail, senha e confirmação, com validações locais alinhadas aos limites principais do backend. O serviço em `frontend/src/app/features/auth/data-access/` obtém CSRF e envia o cadastro pelo proxy local, sem incluir a confirmação de senha. A tela apresenta mensagens de sucesso e erros da API. A autenticação após o cadastro ainda não está disponível.

@@ -41,7 +41,7 @@
         <p>Preencha seus dados para começar.</p>
       </div>
 
-      <form [formGroup]="formulario" (ngSubmit)="enviar()" (input)="enviado = false" novalidate>
+      <form [formGroup]="formulario" (ngSubmit)="enviar()" (input)="limparFeedback()" [attr.aria-busy]="enviando" novalidate>
         <div class="field-group">
           <label for="nome">Nome completo</label>
           <input
@@ -60,6 +60,8 @@
             <span class="field-error" id="nome-error">O nome precisa ter pelo menos 2 caracteres.</span>
           } @else if (formulario.controls.nome.touched && formulario.controls.nome.hasError('maxlength')) {
             <span class="field-error" id="nome-error">O nome pode ter no máximo 120 caracteres.</span>
+          } @else if (errosServidor.nome) {
+            <span class="field-error" id="nome-error">{{ errosServidor.nome }}</span>
           }
         </div>
 
@@ -81,6 +83,8 @@
             <span class="field-error" id="email-error">Digite um e-mail válido.</span>
           } @else if (formulario.controls.email.touched && formulario.controls.email.hasError('maxlength')) {
             <span class="field-error" id="email-error">O e-mail pode ter no máximo 254 caracteres.</span>
+          } @else if (errosServidor.email) {
+            <span class="field-error" id="email-error">{{ errosServidor.email }}</span>
           }
         </div>
 
@@ -102,6 +106,8 @@
             <span class="field-error" id="senha-error">A senha precisa ter pelo menos 8 caracteres.</span>
           } @else if (formulario.controls.senha.touched && formulario.controls.senha.hasError('senhaMuitoLonga')) {
             <span class="field-error" id="senha-error">A senha ultrapassa o limite permitido. Tente usar menos caracteres.</span>
+          } @else if (errosServidor.senha) {
+            <span class="field-error" id="senha-error">{{ errosServidor.senha }}</span>
           }
         </div>
 
@@ -123,11 +129,17 @@
           }
         </div>
 
-        <button class="submit-button" type="submit">Validar meus dados</button>
+        <button class="submit-button" type="submit" [disabled]="enviando">
+          {{ enviando ? 'Enviando cadastro…' : 'Criar conta' }}
+        </button>
 
-        @if (enviado) {
+        @if (mensagemErro) {
+          <p class="form-error" role="alert">{{ mensagemErro }}</p>
+        }
+
+        @if (mensagemSucesso) {
           <p class="form-status" role="status">
-            Os dados estão válidos. O envio do cadastro será habilitado quando a tela for conectada ao servidor.
+            {{ mensagemSucesso }}
           </p>
         }
       </form>

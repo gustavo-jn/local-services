@@ -115,6 +115,8 @@ input[aria-invalid="true"] { border-color: #b42318; }
 .submit-button:hover { transform: translateY(-1px); background: #9e3636; }
 .submit-button:focus-visible, a:focus-visible { outline: 3px solid #f3a347; outline-offset: 3px; }
 .form-status { padding: 12px 13px; border-left: 3px solid #b33e3e; border-radius: 3px; background: #fbf0eb; color: #6d3029; font-size: 0.82rem; line-height: 1.5; }
+.form-error { padding: 12px 13px; border-left: 3px solid #b42318; border-radius: 3px; background: #fff0ee; color: #8c1d14; font-size: 0.82rem; line-height: 1.5; }
+.submit-button:disabled { cursor: progress; opacity: .72; }
 .form-footer { margin-top: 22px; color: var(--ink); font-size: 0.81rem; font-weight: 700; }
 .form-footer span { display: block; margin-top: 4px; color: var(--muted); font-weight: 400; }
 

@@ -4,7 +4,7 @@ Plataforma web para divulgação, busca e contratação de serviços locais. O p
 
 ## Estado atual
 
-O backend Spring Boot executa com Java 25, PostgreSQL em Docker e migrações Flyway. Já oferece health check, obtenção de CSRF e cadastro de usuários. O frontend Angular apresenta a página inicial e a tela visual de cadastro em `/cadastro`; o envio do cadastro ainda não está conectado à API e a tela de login ainda será implementada.
+O backend Spring Boot executa com Java 25, PostgreSQL em Docker e migrações Flyway. Já oferece health check, obtenção de CSRF e cadastro de usuários. O frontend Angular apresenta a página inicial e a tela de cadastro em `/cadastro`, integrada ao endpoint de cadastro. O login ainda será implementado.
 
 ## Tecnologias previstas
 
