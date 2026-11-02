@@ -55,7 +55,7 @@ A rota `/` renderiza `frontend/src/app/features/home/`. O HTML e o CSS foram ada
 - `frontend/src/index.html`: idioma e metadados da aplicação.
 - `frontend/public/images/home/`: cópias otimizadas em WebP das cinco imagens fornecidas.
 
-O `script.js` independente não é carregado pela aplicação. Suas interações foram adaptadas para o componente, sem inserir scripts ou listeners permanentes no documento. Os botões de cadastro e login da Home ainda não estão vinculados às rotas correspondentes.
+O `script.js` independente não é carregado pela aplicação. Suas interações foram adaptadas para o componente, sem inserir scripts ou listeners permanentes no documento. Os links de cadastro da Home navegam para `/cadastro`; os controles de login permanecem desativados até a tela ser implementada.
 
 ## Frontend - cadastro
 

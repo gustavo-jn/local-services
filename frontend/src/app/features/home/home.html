@@ -42,7 +42,7 @@
 
         <div class="header-actions">
           <button type="button" class="link-login" disabled title="Entrada indisponível no momento">Entrar</button>
-          <button type="button" class="btn btn-header-cta" disabled title="Cadastro indisponível no momento">Criar conta</button>
+          <a class="btn btn-header-cta" routerLink="/cadastro" (click)="closeMenu()">Criar conta</a>
         </div>
       </div>
     </div>
@@ -67,7 +67,7 @@
               </p>
 
               <div class="hero-actions">
-                <button type="button" class="btn btn-hero-primary" disabled title="Cadastro indisponível no momento">Criar conta</button>
+                <a class="btn btn-hero-primary" routerLink="/cadastro">Criar conta</a>
                 <button type="button" class="hero-secondary-link" disabled title="Entrada indisponível no momento">Já tenho uma conta</button>
               </div>
 
@@ -312,7 +312,7 @@
             </p>
 
             <div class="audience-card-footer">
-              <button type="button" class="btn btn-coral-solid" disabled title="Cadastro indisponível no momento">Criar conta</button>
+              <a class="btn btn-coral-solid" routerLink="/cadastro">Criar conta</a>
             </div>
           </article>
 
@@ -331,7 +331,7 @@
             </p>
 
             <div class="audience-card-footer">
-              <button type="button" class="btn btn-orange-solid" disabled title="Cadastro indisponível no momento">Criar conta</button>
+              <a class="btn btn-orange-solid" routerLink="/cadastro">Criar conta</a>
             </div>
           </article>
         </div>
@@ -432,7 +432,7 @@
           </div>
 
           <div class="cta-actions">
-            <button type="button" class="btn btn-orange-solid btn-lg" disabled title="Cadastro indisponível no momento">Criar conta</button>
+            <a class="btn btn-orange-solid btn-lg" routerLink="/cadastro">Criar conta</a>
             <button type="button" class="cta-login-link" disabled title="Entrada indisponível no momento">Já tenho cadastro — Entrar</button>
           </div>
         </div>
@@ -472,7 +472,7 @@
         <div class="footer-nav-col">
           <h2 class="footer-col-title">Conta</h2>
           <ul class="footer-links">
-            <li><button type="button" disabled title="Cadastro indisponível no momento">Criar conta</button></li>
+            <li><a routerLink="/cadastro">Criar conta</a></li>
             <li><button type="button" disabled title="Entrada indisponível no momento">Entrar</button></li>
           </ul>
         </div>

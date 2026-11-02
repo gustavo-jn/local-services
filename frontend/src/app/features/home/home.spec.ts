@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { Home } from './home';
 import { vi } from 'vitest';
 
@@ -38,6 +39,7 @@ describe('Home', () => {
     Object.defineProperty(document, 'hidden', { configurable: true, value: false });
     await TestBed.configureTestingModule({
       imports: [Home],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Home);
@@ -96,12 +98,14 @@ describe('Home', () => {
     expect(button.getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('does not navigate to registration or login before those pages exist', () => {
+  it('links every registration action to the registration page and keeps login disabled', () => {
     const host: HTMLElement = fixture.nativeElement;
-    expect(host.querySelector('a[href="/cadastro"], a[href="/login"]')).toBeNull();
-    const actions = host.querySelectorAll<HTMLButtonElement>('button[title*="indisponível"]');
-    expect(actions.length).toBeGreaterThan(0);
-    expect([...actions].every(button => button.disabled)).toBe(true);
+    const registrationLinks = host.querySelectorAll<HTMLAnchorElement>('a[href="/cadastro"]');
+    expect(registrationLinks).toHaveLength(6);
+    expect([...registrationLinks].every(link => link.textContent?.trim() === 'Criar conta')).toBe(true);
+    const loginActions = host.querySelectorAll<HTMLButtonElement>('button[title*="Entrada indisponível"]');
+    expect(loginActions.length).toBeGreaterThan(0);
+    expect([...loginActions].every(button => button.disabled)).toBe(true);
   });
 
   it('updates the photo on hover without treating services as search filters', () => {
