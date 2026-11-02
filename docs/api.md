@@ -42,7 +42,29 @@ Após o login, a sessão CSRF é renovada. Antes da próxima operação de alter
 | 401 | `INVALID_CREDENTIALS` | E-mail inexistente ou senha incorreta; a resposta é igual nos dois casos |
 | 403 | `INVALID_CSRF_TOKEN` | CSRF ausente, inválido ou sem a sessão correspondente |
 
-O endpoint não cria sessão de usuário no servidor; a autenticação subsequente usa o cookie JWT. Logout e `GET /api/v1/auth/me` ainda não estão implementados.
+O endpoint não cria sessão de usuário no servidor; a autenticação subsequente usa o cookie JWT. O logout ainda não está implementado.
+
+## Usuário autenticado
+
+`GET /api/v1/auth/me` exige um JWT válido no cookie `LS_ACCESS_TOKEN`, recebido no login. Não recebe ID ou e-mail como parâmetro: a conta é identificada pelo UUID em `sub` do JWT e consultada no banco. O endpoint não exige token CSRF, pois é uma consulta.
+
+Sucesso: HTTP 200, com `Cache-Control: no-store` e somente os dados atuais da conta:
+
+```json
+{
+  "id": "b8559bc1-8237-4345-92a8-aecb1ce1699d",
+  "nome": "Usuario Teste",
+  "email": "usuario@example.com"
+}
+```
+
+Senha, hash e JWT não são retornados. Cookie ausente, JWT inválido ou expirado, `sub` ausente ou inválido e conta inexistente retornam HTTP 401 com `code: UNAUTHORIZED` e `message: Autenticação necessária`. O cookie `JSESSIONID` sozinho e o cabeçalho `Authorization: Bearer` não autenticam esse endpoint; a API lê o JWT somente do cookie.
+
+Para conferir no Postman:
+
+1. Obter CSRF e fazer `POST /api/v1/auth/login` com as credenciais de uma conta existente.
+2. Preservar o cookie `LS_ACCESS_TOKEN` e enviar `GET /api/v1/auth/me` com `No Auth`, usando o mesmo host do login.
+3. Conferir HTTP 200 e os dados da conta. Em um cliente sem o cookie JWT, a mesma consulta deve retornar 401.
 
 ## Cadastro de usuário
 
