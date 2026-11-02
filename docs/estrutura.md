@@ -36,7 +36,10 @@ Os testes ficam em `backend/src/test/java`, seguindo os mesmos pacotes das class
 
 ## Demais pacotes
 
-- `auth`: obtenção do CSRF e endpoint de login; o serviço consulta credenciais do módulo de conta e emite o JWT.
+- `auth`: CSRF, login, identidade autenticada e logout; o serviço consulta credenciais da conta e emite o JWT.
+- `conta`: cadastro e manutenção dos próprios dados, com confirmação de senha para alterar e-mail/senha.
+- `perfil`: criação, consulta e edição do perfil profissional privado.
+- `agenda`: estrutura da agenda inicial, vinculada de forma única ao perfil.
 - `config`: configuração de segurança, BCrypt, assinatura/validação do JWT, leitura do cookie HttpOnly e respostas dos filtros.
 - `health`: verificação de disponibilidade da API.
 - `common.exception`: formato comum de erro e tratamento centralizado das exceções.
@@ -55,8 +58,22 @@ A rota `/` renderiza `frontend/src/app/features/home/`. O HTML e o CSS foram ada
 - `frontend/src/index.html`: idioma e metadados da aplicação.
 - `frontend/public/images/home/`: cópias otimizadas em WebP das cinco imagens fornecidas.
 
-O `script.js` independente não é carregado pela aplicação. Suas interações foram adaptadas para o componente, sem inserir scripts ou listeners permanentes no documento. Os links de cadastro da Home navegam para `/cadastro`; os controles de login permanecem desativados até a tela ser implementada.
+O `script.js` independente não é carregado pela aplicação. Suas interações foram adaptadas para o componente, sem inserir scripts ou listeners permanentes no documento. Os links de cadastro da Home navegam para `/cadastro`; os links de entrada navegam para `/login`.
 
 ## Frontend - cadastro
 
 A rota `/cadastro` renderiza o componente em `frontend/src/app/features/auth/register/`. A tela possui campos para nome, e-mail, senha e confirmação, com validações locais alinhadas aos limites principais do backend. O serviço em `frontend/src/app/features/auth/data-access/` obtém CSRF e envia o cadastro pelo proxy local, sem incluir a confirmação de senha. A tela apresenta mensagens de sucesso e erros da API. O cadastro não inicia uma sessão.
+
+## Frontend - login
+
+A rota `/login` renderiza o componente em `frontend/src/app/features/auth/login/`. O formulário valida e-mail e senha preenchidos, permite mostrar/ocultar a senha e bloqueia envios duplicados durante a requisição. `data-access/login-api.service.ts` obtém um CSRF novo antes de cada tentativa e envia as credenciais para `POST /api/v1/auth/login`. O navegador gerencia os cookies; o frontend não lê nem armazena o JWT. No sucesso, a senha é removida do formulário e a navegação segue para `/app`. Erros de credenciais, CSRF e indisponibilidade são apresentados na tela, permitindo nova tentativa.
+
+`features/auth/auth-page.css` concentra o visual compartilhado de cadastro e login; `login/login.css` contém os ajustes específicos do login. O cadastro encaminha para o login; o login encaminha para `/app`.
+
+## Frontend - sessão e área privada
+
+`core/auth.service.ts` mantém a identidade em memória e a restaura por `/auth/me`. `auth.guard.ts` protege `/app`; `auth.interceptor.ts` trata 401 das operações privadas. Nenhum JWT é salvo em storage. `core/api.service.ts` fornece o fluxo de CSRF para as alterações privadas e o logout.
+
+`features/area/` contém o layout e a visão geral; `features/conta/` oferece os formulários de nome, e-mail e senha; `features/perfil/` contém criação/edição e consulta da agenda inicial. A Home mostra a identificação e o acesso à área privada. O estado é limpo após confirmação do logout pelo servidor.
+
+`frontend/e2e/` testa o fluxo real em Chrome/Firefox, com serviços temporários nas portas 18080 e 4300. `scripts/` contém a execução local com variáveis de ambiente; `.jwt-secret.local` é ignorado pelo Git.

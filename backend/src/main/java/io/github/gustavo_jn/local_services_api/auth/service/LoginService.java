@@ -70,5 +70,6 @@ public class LoginService {
 	}
 
 	public record ResultadoLogin(String token, UsuarioResponseDTO usuario) {
+		@Override public String toString() { return "ResultadoLogin[conteúdo omitido]"; }
 	}
 }

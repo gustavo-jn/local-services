@@ -15,6 +15,9 @@ public class JwtCookieBearerTokenResolver implements BearerTokenResolver {
 	@Override
 	public String resolve(HttpServletRequest request) {
 		String path = request.getServletPath();
+		if (!StringUtils.hasText(path)) {
+			path = request.getRequestURI().substring(request.getContextPath().length());
+		}
 		if (isPublicAuthenticationPath(path)) {
 			return null;
 		}
@@ -41,6 +44,7 @@ public class JwtCookieBearerTokenResolver implements BearerTokenResolver {
 		return "/api/v1/health".equals(path)
 				|| "/api/v1/auth/csrf".equals(path)
 				|| "/api/v1/auth/register".equals(path)
-				|| "/api/v1/auth/login".equals(path);
+				|| "/api/v1/auth/login".equals(path)
+				|| "/api/v1/auth/logout".equals(path);
 	}
 }

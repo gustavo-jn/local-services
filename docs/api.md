@@ -42,7 +42,7 @@ Após o login, a sessão CSRF é renovada. Antes da próxima operação de alter
 | 401 | `INVALID_CREDENTIALS` | E-mail inexistente ou senha incorreta; a resposta é igual nos dois casos |
 | 403 | `INVALID_CSRF_TOKEN` | CSRF ausente, inválido ou sem a sessão correspondente |
 
-O endpoint não cria sessão de usuário no servidor; a autenticação subsequente usa o cookie JWT. O logout ainda não está implementado.
+O endpoint não cria sessão de usuário no servidor; a autenticação subsequente usa o cookie JWT.
 
 ## Usuário autenticado
 
@@ -104,8 +104,73 @@ Os erros seguem o formato `code`, `message`, `fieldErrors`, `timestamp` e `path`
 
 ### Testar pelo Postman
 
-1. Executar a aplicação com PostgreSQL disponível e `DB_PASSWORD` configurada.
+1. Executar a aplicação com PostgreSQL disponível, `DB_PASSWORD` e `JWT_SECRET` configuradas.
 2. Enviar `GET /api/v1/auth/csrf` com `No Auth` e manter os cookies habilitados.
 3. Copiar `token` para o cabeçalho `X-CSRF-TOKEN` de uma nova requisição.
 4. Enviar `POST /api/v1/auth/register`, também com `No Auth`, usando `Body → raw → JSON` com os dados do cadastro. Utilizar o mesmo host para preservar a sessão.
 5. Conferir HTTP 201. Repetir o e-mail deve retornar 409. Um cadastro manual bem-sucedido permanece no banco.
+
+## Logout
+
+`POST /api/v1/auth/logout` exige CSRF da sessão atual, inclusive com um JWT ainda válido. Aceita JWT expirado/ausente para permitir limpar o acesso local. Retorna 204 e expira `LS_ACCESS_TOKEN` (`Path=/api`) e `JSESSIONID` (`Path=/`), com HttpOnly, SameSite=Lax e Secure conforme o ambiente. Invalida a sessão CSRF. O frontend limpa a identificação somente após a confirmação do servidor; se houver falha de rede, permite nova tentativa.
+
+Logout e troca de senha não revogam cópias dos JWTs anteriores. Elas expiram em até 30 minutos; não há refresh token ou lista de revogação nesta entrega.
+
+## Minha conta
+
+Todas as operações abaixo exigem cookie JWT válido, identificam a conta por `sub` e ignoram IDs de proprietário fornecidos pelo cliente. `GET /api/v1/me` retorna o mesmo DTO de identidade de `/auth/me`, com dados atuais. Respostas privadas usam `Cache-Control: no-store`.
+
+`PATCH /api/v1/me`: enviar `nome`, `email` ou ambos. Ao enviar `email`, `senhaAtual` é obrigatória, inclusive se o endereço for igual ao atual.
+
+```json
+{"nome":"Novo Nome"}
+```
+
+```json
+{"email":"novo@example.com","senhaAtual":"senha-atual"}
+```
+
+Nome é aparado e deve ter de 2 a 120 caracteres. E-mail é aparado, convertido para minúsculas e validado, com até 254 caracteres. Sucesso: 200 com ID, nome e e-mail. Corpo sem nome/e-mail retorna 400; senha atual incorreta retorna 400 `INVALID_CURRENT_PASSWORD`; e-mail duplicado retorna 409 `EMAIL_ALREADY_REGISTERED`, também em conflito detectado pelo banco.
+
+`PATCH /api/v1/me/senha`:
+
+```json
+{"senhaAtual":"senha-atual","novaSenha":"nova-senha"}
+```
+
+Exige a senha atual correta e nova senha de pelo menos 8 caracteres, com limite de 72 bytes UTF-8. Senhas não são aparadas ou truncadas. Sucesso: 204. A nova senha é persistida como BCrypt; nenhum hash aparece na resposta. Entradas inválidas retornam 400.
+
+## Perfil profissional inicial
+
+Operações privadas em `/api/v1/me/perfil-profissional`:
+
+| Método | Efeito | Sucesso |
+|---|---|---|
+| GET | Consulta o perfil da conta autenticada | 200; 404 `PROFILE_NOT_FOUND` quando ainda não existe |
+| POST | Cria perfil e agenda na mesma transação | 201; 409 `PROFILE_ALREADY_EXISTS` se já existe |
+| PATCH | Edita o perfil da própria conta | 200; 404 se ainda não existe |
+
+Corpo de criação/edição:
+
+```json
+{"nome":"Nome profissional","descricao":"Descrição do trabalho oferecido.","aceitaNovosServicos":true}
+```
+
+Nome e descrição são aparados e obrigatórios (2–120 e 10–3000 caracteres, respectivamente). `aceitaNovosServicos` é opcional: verdadeiro na criação e preservado na edição quando omitido. Edição envia nome e descrição completos. O cliente não define titular, ID da agenda nem publicação; campos adicionais não alteram esses valores.
+
+```json
+{
+  "id":"b8559bc1-8237-4345-92a8-aecb1ce1699d",
+  "nome":"Nome profissional",
+  "descricao":"Descrição do trabalho oferecido.",
+  "aceitaNovosServicos":true,
+  "publicado":false,
+  "agenda":{"id":"8027d1bc-5db2-47b4-a2a3-e9c87ef02e47","fusoReferencia":"America/Sao_Paulo"}
+}
+```
+
+Uma conta tem no máximo um perfil, com uma agenda. O perfil permanece privado; horários, compromissos e publicação não são simulados. Ausência de autenticação retorna 401. POST/PATCH sem CSRF válido retornam 403 mesmo com JWT válido. Validação de campos retorna 400 `VALIDATION_ERROR`.
+
+## Coleção Postman
+
+Importar `docs/postman/LocalServices.postman_collection.json`. Definir localmente `email`, `senha` e, para o teste de troca de senha, `novaSenha`. Não exportar credenciais reais. A coleção usa cookies e obtém CSRF antes de cada alteração. A validação estrutural da coleção e os testes de aplicação são evidências diferentes; consultar `docs/testes.md` para os comandos realmente executados.

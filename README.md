@@ -4,7 +4,30 @@ Plataforma web para divulgação, busca e contratação de serviços locais. O p
 
 ## Estado atual
 
-O backend Spring Boot executa com Java 25, PostgreSQL em Docker e migrações Flyway. Já oferece health check, obtenção de CSRF, cadastro de usuários e o endpoint de login com JWT em cookie `HttpOnly`. O frontend Angular apresenta a página inicial e a tela de cadastro em `/cadastro`, integrada à API. A tela de login, a identificação do usuário autenticado e o logout ainda serão implementados.
+Primeira entrega: Home, cadastro, login com JWT em cookie `HttpOnly`, identificação após recarregar, área privada, logout, alteração de nome/e-mail/senha e criação/edição do perfil profissional privado com agenda inicial. Backend Java 25/Spring Boot, frontend Angular e PostgreSQL 17.10 em Docker, com migrações Flyway.
+
+O roteiro de apresentação está em [docs/roteiro-demo.md](docs/roteiro-demo.md); o escopo e as evidências estão em [docs/entrega-20.md](docs/entrega-20.md) e [docs/testes.md](docs/testes.md).
+
+## Início rápido no Windows
+
+Na raiz, copie `.env.example` para `.env` se ainda não existir e escolha a senha do PostgreSQL. Preserve o `.env` existente e a senha usada no volume já criado.
+
+```powershell
+docker compose up -d
+docker compose ps
+.\scripts\Invoke-Backend.ps1 -Task Run
+```
+
+Em outro terminal, dentro de `frontend`, com Node 26 selecionado:
+
+```powershell
+npm.cmd ci
+npm.cmd start
+```
+
+Abra `http://localhost:4200`. O script do backend lê as configurações locais do `.env` e cria, se necessário, uma chave em `.jwt-secret.local`, ignorada pelo Git. Ele preserva variáveis de ambiente já definidas. O Java executado diretamente pelo IntelliJ continua exigindo a configuração explícita das variáveis abaixo.
+
+Para exemplos fictícios de apresentação, execute o backend com `-Demo`. A carga é restrita ao perfil Spring `demo`; os acessos estão no roteiro.
 
 ## Tecnologias previstas
 
@@ -75,7 +98,7 @@ java --version
 .\backend\mvnw.cmd -f backend/pom.xml test
 ```
 
-Os testes de integração dependem do PostgreSQL em execução e da variável `DB_PASSWORD` configurada no processo.
+Os testes de integração dependem do PostgreSQL em execução, de `DB_PASSWORD` e `JWT_SECRET`. Para carregar o ambiente local automaticamente, execute na raiz `./scripts/Invoke-Backend.ps1 -Task Test`. Para compilar o JAR e executar os testes, use `./scripts/Invoke-Backend.ps1 -Task Package`.
 
 ### Iniciar a aplicação
 
@@ -111,4 +134,10 @@ Durante o desenvolvimento, chamadas `/api/...` passam pelo proxy do Angular para
 
 ## Configuração
 
-Credenciais e segredos não devem ser versionados. As configurações locais do banco e, futuramente, das chaves JWT serão fornecidas por variáveis de ambiente e documentadas por arquivos de exemplo sem valores reais.
+Credenciais e segredos não são versionados. `DB_URL` e `DB_USER` são opcionais; `DB_PASSWORD` e `JWT_SECRET` são obrigatórios no processo Java. `.env` e `.jwt-secret.local` são locais e ignorados pelo Git. O `.env` é lido pelo script auxiliar; Spring Boot, sozinho, não o carrega.
+
+## Testes de navegador
+
+Dentro de `frontend`, instale o Firefox de testes com `npx.cmd playwright install firefox` e execute `npm.cmd run e2e`. É necessário Google Chrome instalado, Java 25, Node 26 e PostgreSQL saudável. O Playwright inicia serviços temporários nas portas 18080 e 4300; mantém os servidores usuais em 8080/4200 livres para o desenvolvimento.
+
+O fluxo roda em Chrome e Firefox nas larguras de 360, 768 e 1366 px. Cria somente contas fictícias identificadas por UUID e as remove ao terminar. As capturas ficam em `docs/evidencias/`; o relatório local fica em `frontend/playwright-report/` (ignorado pelo Git). Logs e traces de falha também não devem ser versionados.

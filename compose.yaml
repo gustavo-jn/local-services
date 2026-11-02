@@ -1,6 +1,7 @@
 services:
   db:
-    image: postgres:17
+    # PostgreSQL 17.10 validado; digest imutável para execução reproduzível.
+    image: postgres@sha256:a426e44bac0b759c95894d68e1a0ac03ecc20b619f498a91aae373bf06d8508d
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}

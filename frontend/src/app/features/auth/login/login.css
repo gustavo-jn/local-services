@@ -1,0 +1,39 @@
+fieldset {
+  display: grid;
+  min-width: 0;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.password-field { position: relative; }
+.password-field input { padding-right: 84px; }
+.password-toggle {
+  position: absolute;
+  inset: 1px 1px 1px auto;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--coral);
+  cursor: pointer;
+  font: inherit;
+  font-size: .76rem;
+  font-weight: 700;
+}
+.password-toggle:hover { background: #fbf0eb; }
+.password-toggle:focus-visible { outline: 2px solid var(--coral); outline-offset: -4px; }
+fieldset:disabled input { background: #f7f4f0; }
+fieldset:disabled .password-toggle { cursor: progress; opacity: .65; }
+.submit-button:disabled:hover { transform: none; }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}

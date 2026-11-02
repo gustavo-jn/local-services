@@ -107,3 +107,50 @@ Também passaram os seis testes unitários de `UsuarioService`, três testes de 
 - A inspeção visual da página nas larguras 360, 768 e 1366 px ficou pendente: o acesso ao navegador embutido estava indisponível e a ferramenta de uso do computador interrompeu a inspeção por não conseguir determinar a URL atual do Chrome com segurança. Não foi contornado esse bloqueio por outra automação de navegador.
 - Build, testes e HTTP não comprovam ausência de sobreposição ou rolagem horizontal em um navegador real. A conferência visual e o teste em Chrome/Firefox ainda precisam ser feitos.
 - Cadastro e login no frontend seguem pendentes. Os botões estão desativados; não houve teste de autenticação ou cadastro pela interface.
+
+## 02/11/2026 - Conclusão técnica da primeira entrega P0–P6
+
+Este registro atualiza os limites dos registros históricos acima. Cadastro, login, estado autenticado, logout, conta e perfil estão integrados à API real.
+
+### Backend e banco reais
+
+- Na raiz: `./scripts/Invoke-Backend.ps1 -Task Test`: **49 testes, 0 falhas, 0 erros; BUILD SUCCESS**.
+- Na raiz: `./scripts/Invoke-Backend.ps1 -Task Package`: repetiu os **49 testes aprovados** e gerou o JAR executável `backend/target/local-services-api-0.0.1-SNAPSHOT.jar`.
+- Java 25.0.2, Spring Boot 4.1.2, PostgreSQL 17.10 e migrações V1/V2. Os scripts carregaram as configurações locais sem imprimir senhas ou a chave JWT.
+- `UsuarioAutenticadoControllerTests`: 17 cenários com filtro e validação JWT reais; apenas repository simulado. Verifica assinatura, expiração, emissor, audiência, ausência de `aud`/`sub`, conta inexistente, ausência de cookie e não exposição de credenciais.
+- `EntregaInicialTests`: 10 cenários com PostgreSQL real e rollback. Verifica cookie HttpOnly/Path/SameSite/validade, login inválido, rotação de sessão/CSRF, logout, rejeição de alteração sem CSRF mesmo com JWT, edição de nome/e-mail/senha, conflito de e-mail, senha anterior recusada, perfil/agenda, privacidade e isolamento de contas.
+- `PerfilConcorrenciaTests`: duas transações reais simultâneas retornaram 201 e 409, mantendo um perfil e uma agenda. Remove somente seus próprios registros de teste.
+- Os testes anteriores de cadastro, conflito concorrente, validação, BCrypt e inicialização também passaram.
+
+Durante a implementação, os testes detectaram a dispensa automática de CSRF para bearer tokens pelo Resource Server. O matcher do filtro foi corrigido para exigir CSRF em todos os métodos inseguros, inclusive com JWT em cookie. Foi corrigido também o reconhecimento de caminhos públicos pelo resolver em requisições MockMvc. A suíte completa passou após as correções.
+
+### Frontend
+
+- Dentro de `frontend`, com Node 26.13.0: `npm.cmd run build`: **build de produção aprovado**, total inicial 420,10 kB (estimativa transferida 99,25 kB), dentro dos orçamentos configurados.
+- `npm.cmd test -- --watch=false`: **5 arquivos, 22 testes aprovados**, sem falhas.
+- Vitest/jsdom verifica Home, aplicação, formulário de login, restauração/saída da identidade e criação/edição do perfil. Esses testes usam HTTP simulado; as verificações reais estão descritas a seguir.
+
+### Navegadores e integração real
+
+- `npm.cmd run e2e`: execução final com **6 cenários aprovados**, usando Google Chrome 156.0.8078.74 e Firefox 157.0 nas larguras **360, 768 e 1366 px**.
+- API temporária em 18080, Angular temporário em 4300, PostgreSQL real. O Playwright iniciou e encerrou os serviços temporários, sem encerrar o IntelliJ ou o servidor habitual de desenvolvimento.
+- Cada cenário percorreu: Home; cadastro válido; rejeição de e-mail duplicado; senha incorreta; login correto; cookie HttpOnly inacessível a `document.cookie`; restauração após reload; troca de nome/e-mail/senha; criação e edição de perfil; consulta após reload; tentativa de alteração sem CSRF; logout; bloqueio da rota privada; senha antiga recusada; nova senha aceita; encerramento do estado da SPA após 401 em operação privada.
+- As contas usam prefixo `e2e-` e UUID exclusivo por execução; a limpeza elimina somente essas contas e seus perfis/agendas.
+- A primeira execução encontrou rolagem horizontal na área privada de 360 px. A grade e o tamanho mínimo da navegação foram corrigidos. Os dois cenários móveis passaram na repetição, e depois a matriz final inteira passou.
+- Capturas reais de Home, login, área privada, conta e perfil, em `docs/evidencias/`. Inspeção visual adicional das capturas de desktop e celular confirmou leitura e disposição dos formulários. Os testes verificam ausência de transbordamento horizontal nas páginas capturadas; não representam auditoria completa de acessibilidade.
+
+### Persistência após reinício
+
+- Na raiz: `./scripts/Test-Persistencia.ps1`: **aprovado**.
+- O script executou o JAR em 18080, criou conta/perfil/agenda fictícios, encerrou somente essa instância, aplicou o Compose com imagem fixada, reiniciou o PostgreSQL e iniciou novamente a API.
+- O volume permaneceu `local-services-api_postgres_data`. Login e consulta após os reinícios retornaram os mesmos UUIDs de conta, perfil e agenda.
+- O registro fictício da execução final foi `59eaca23-246e-410a-ab3a-d57caec1d2d1`; o script removeu somente essa conta e seus vínculos ao terminar. Nunca removeu o volume nem limpou tabelas inteiras.
+- O perfil `demo` foi executado em duas inicializações. As contas fictícias Marina/Pedro foram preparadas sem duplicação ou redefinição de dados; permaneceram disponíveis para a apresentação. Sem esse perfil, não há carga automática.
+- A primeira tentativa do helper falhou na leitura do nome do volume por aspas em um template Docker no PowerShell; a consulta passou a usar JSON. A execução corrigida confirmou a persistência e encerrou a API temporária.
+
+### Artefatos e limites
+
+- Coleção Postman JSON 2.1: 13 requisições, variáveis de credenciais vazias, obtenção de CSRF para alterações e verificações de status/ausência de credenciais na resposta. JSON e estrutura das operações conferidos; a coleção não foi executada pelo Postman CLI. A execução real dos contratos foi feita pelos testes Spring e pelos navegadores.
+- `.env` e `.jwt-secret.local` confirmados como ignorados pelo Git; segredos locais não integram o pacote entregue.
+- Logs detalhados, relatório HTML e traces ficam em diretórios ignorados (`backend/target`, `frontend/playwright-report`, `frontend/test-results`). Capturas versionadas contêm somente dados fictícios.
+- Escopo funcional encerrado em P6; perfil público, horários, busca, catálogo, solicitações, propostas, atendimentos, mensagens e avaliações continuam para a Parte 2. Aceitação acadêmica do marco depende do orientador.

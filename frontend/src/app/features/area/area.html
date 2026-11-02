@@ -1,0 +1,61 @@
+<div class="area">
+  <header class="area-header">
+    <a class="brand" routerLink="/" aria-label="Local Services — voltar ao início"
+      ><span class="brand-mark" aria-hidden="true"
+        ><svg
+          viewBox="0 0 28 28"
+          width="25"
+          height="25"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect width="28" height="28" rx="6" fill="#B33E3E" />
+          <path
+            d="M14 5.5C10.13 5.5 7 8.54 7 12.3C7 17.1 12.92 20.85 13.57 21.25C13.83 21.41 14.17 21.41 14.43 21.25C15.08 20.85 21 17.1 21 12.3C21 8.54 17.87 5.5 14 5.5Z"
+            fill="#FAF8F5"
+          />
+          <path
+            d="M10.5 12.7L14 9.8L17.5 12.7V16C17.5 16.44 17.14 16.8 16.7 16.8H11.3C10.86 16.8 10.5 16.44 10.5 16V12.7Z"
+            fill="#B33E3E"
+          /></svg></span
+      >Local Services</a
+    >
+    <div class="account-actions">
+      <span>{{ auth.usuario()?.nome }}</span
+      ><button type="button" class="text-button" (click)="sair()" [disabled]="saindo()">
+        {{ saindo() ? 'Saindo…' : 'Sair' }}
+      </button>
+    </div>
+  </header>
+  <div class="area-layout">
+    <aside class="sidebar">
+      <p class="eyebrow">SEU ESPAÇO</p>
+      <nav aria-label="Minha área">
+        <a
+          routerLink="/app"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          ariaCurrentWhenActive="page"
+          >Visão geral</a
+        >
+        <a routerLink="/app/conta" routerLinkActive="active" ariaCurrentWhenActive="page"
+          >Minha conta</a
+        >
+        <a
+          routerLink="/app/perfil-profissional"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >Perfil profissional</a
+        >
+        <a routerLink="/">Voltar ao início <span aria-hidden="true">↗</span></a>
+      </nav>
+      <p class="sidebar-note">Uma conta para encontrar ajuda e apresentar seu trabalho.</p>
+    </aside>
+    <main id="area-conteudo" tabindex="-1">
+      @if (erro()) {
+        <p class="error" role="alert">{{ erro() }}</p>
+      }
+      <router-outlet />
+    </main>
+  </div>
+</div>

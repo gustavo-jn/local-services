@@ -1,0 +1,163 @@
+:host {
+  display: block;
+  background: #faf8f5;
+  color: #262626;
+  min-height: 100vh;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+.area {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 clamp(18px, 5vw, 72px);
+}
+.area-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 84px;
+  gap: 18px;
+  border-bottom: 1px solid #e8e1d7;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #262626;
+  font-weight: 750;
+  font-size: 1.1rem;
+  text-decoration: none;
+  letter-spacing: -0.03em;
+}
+.brand-mark {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.account-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 0.86rem;
+  min-width: 0;
+}
+.account-actions > span {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.text-button {
+  color: #963434;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 10px;
+}
+.area-layout {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 76px);
+  padding: 42px 0 64px;
+}
+.sidebar {
+  min-width: 0;
+}
+.eyebrow {
+  color: #a63a3a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.sidebar nav {
+  display: grid;
+  gap: 6px;
+  margin-top: 24px;
+}
+.sidebar nav a {
+  padding: 12px 14px;
+  text-decoration: none;
+  color: #625c56;
+  border-radius: 5px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.sidebar nav a:hover {
+  background: #f3ece5;
+}
+.sidebar nav a.active {
+  background: #f4e4df;
+  color: #923535;
+}
+.sidebar-note {
+  margin-top: 32px;
+  padding: 0 14px;
+  color: #716b65;
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+main {
+  min-width: 0;
+  outline: none;
+}
+.error {
+  padding: 14px;
+  color: #8c1d14;
+  background: #fff0ee;
+  border-left: 3px solid #b42318;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #d88430;
+  outline-offset: 3px;
+}
+button:disabled {
+  cursor: progress;
+  opacity: 0.65;
+}
+@media (max-width: 760px) {
+  .area-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding-top: 20px;
+  }
+  .sidebar nav {
+    display: flex;
+    max-width: 100%;
+    overflow-x: auto;
+    margin-top: 12px;
+    gap: 4px;
+  }
+  .sidebar nav a {
+    white-space: nowrap;
+    padding: 10px;
+  }
+  .sidebar-note {
+    display: none;
+  }
+  .eyebrow {
+    margin: 0;
+  }
+}
+@media (max-width: 420px) {
+  .account-actions {
+    gap: 3px;
+  }
+  .account-actions > span {
+    max-width: 90px;
+  }
+  .brand {
+    font-size: 0.95rem;
+  }
+  .area-header {
+    min-height: 72px;
+  }
+}

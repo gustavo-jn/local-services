@@ -41,8 +41,18 @@
         </nav>
 
         <div class="header-actions">
-          <button type="button" class="link-login" disabled title="Entrada indisponível no momento">Entrar</button>
+          @if(auth.usuario(); as usuario) {
+          <a class="link-login account-name" routerLink="/app" (click)="closeMenu()">Olá, {{ usuario.nome }}</a>
+          <a class="btn btn-header-cta" routerLink="/app" (click)="closeMenu()">Minha área</a>
+          <button class="link-login" type="button" (click)="sair()" [disabled]="saindo()">{{ saindo() ? 'Saindo…' : 'Sair' }}</button>
+          } @else if(auth.estado()==='carregando') {
+          <span class="link-login" role="status">Verificando conta…</span>
+          } @else {
+          <a class="link-login" routerLink="/login" (click)="closeMenu()">Entrar</a>
           <a class="btn btn-header-cta" routerLink="/cadastro" (click)="closeMenu()">Criar conta</a>
+          }
+          @if(erroConta()) { <span role="alert" class="account-error">{{ erroConta() }}</span> }
+          @if(auth.estado()==='indisponivel') { <button class="link-login" type="button" (click)="auth.restaurar().subscribe()">Verificar conta</button> }
         </div>
       </div>
     </div>
@@ -68,7 +78,7 @@
 
               <div class="hero-actions">
                 <a class="btn btn-hero-primary" routerLink="/cadastro">Criar conta</a>
-                <button type="button" class="hero-secondary-link" disabled title="Entrada indisponível no momento">Já tenho uma conta</button>
+                <a class="hero-secondary-link" routerLink="/login">Já tenho uma conta</a>
               </div>
 
               <p class="hero-stage-note">
@@ -162,20 +172,10 @@
         <div class="section-heading-block" data-reveal="up">
           <h2 class="section-title" id="services-title">Diferentes trabalhos. Uma conexão local.</h2>
           <p class="section-description">
-            Pintura, manutenção, instalações, reparos e jardinagem são alguns exemplos de serviços presenciais que fazem parte da proposta do Local Services.
+            Pintura, manutenção, instalações, alvenaria, reparos e jardinagem são alguns exemplos de serviços presenciais que fazem parte da proposta do Local Services.
           </p>
         </div>
 
-
-        @if (motionAvailable()) {
-          <div class="motion-controls">
-            <button type="button" class="motion-toggle" (click)="toggleMotion()"
-              [attr.aria-pressed]="motionPaused()" [disabled]="reducedMotion()"
-              aria-controls="services-photo-stack steps-timeline">
-              {{ motionPaused() ? 'Retomar animações' : 'Pausar animações' }}
-            </button>
-          </div>
-        }
 
         <div class="ref4-split-layout">
 
@@ -191,8 +191,15 @@
               <img
                 class="services-stack-img"
                 data-service-img="pintura" [class.is-active]="activeImage() === 'pintura'" [attr.aria-hidden]="activeImage() !== 'pintura'"
-                src="/images/home/pintor.webp"
-                alt="Profissional realizando pintura externa de parede"
+                src="/images/home/pintor.jpg"
+                alt="Profissional realizando um serviço em vitrine comercial"
+                loading="lazy"
+              >
+              <img
+                class="services-stack-img"
+                data-service-img="pedreiro" [class.is-active]="activeImage() === 'pedreiro'" [attr.aria-hidden]="activeImage() !== 'pedreiro'"
+                src="/images/home/pedreiro.jpg"
+                alt="Pedreiro assentando tijolos com argamassa"
                 loading="lazy"
               >
               <img
@@ -268,6 +275,19 @@
               <p class="ref4-card-desc">Montagem e instalação de itens no local.</p>
             </article>
 
+            <article class="ref4-card ref4-card--coral" data-service-target="pedreiro" (mouseenter)="previewService('pedreiro')" (mouseleave)="endServicePreview()" data-reveal="up" data-reveal-delay="240">
+              <div class="ref4-card-top">
+                <h3 class="ref4-card-title">Alvenaria</h3>
+                <span class="ref4-icon-badge" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 5h18v14H3z" />
+                    <path d="M3 10h18M3 15h18M9 5v5m6 0v5m-6 0v4" />
+                  </svg>
+                </span>
+              </div>
+              <p class="ref4-card-desc">Assentamento de tijolos e pequenos reparos.</p>
+            </article>
+
             <article class="ref4-card ref4-card--coral" data-service-target="manutencao" (mouseenter)="previewService('manutencao')" (mouseleave)="endServicePreview()" data-reveal="up" data-reveal-delay="270">
               <div class="ref4-card-top">
                 <h3 class="ref4-card-title">Reparos</h3>
@@ -282,7 +302,7 @@
               <p class="ref4-card-desc">Ajustes e consertos do dia a dia.</p>
             </article>
 
-            <article class="ref4-card ref4-card--coral ref4-card--span2" data-service-target="jardinagem" (mouseenter)="previewService('jardinagem')" (mouseleave)="endServicePreview()" data-reveal="up" data-reveal-delay="340">
+            <article class="ref4-card ref4-card--white" data-service-target="jardinagem" (mouseenter)="previewService('jardinagem')" (mouseleave)="endServicePreview()" data-reveal="up" data-reveal-delay="340">
               <div class="ref4-card-top">
                 <h3 class="ref4-card-title">Jardinagem</h3>
                 <span class="ref4-icon-badge" aria-hidden="true">
@@ -362,7 +382,7 @@
 
           <div class="steps-trio-thumbs" aria-hidden="true">
             <div class="trio-thumb">
-              <img src="/images/home/pintor.webp" alt="" loading="lazy">
+              <img src="/images/home/pintor.jpg" alt="" loading="lazy">
             </div>
             <div class="trio-thumb">
               <img src="/images/home/carpinteiro.webp" alt="" loading="lazy">
@@ -445,7 +465,7 @@
 
           <div class="cta-actions">
             <a class="btn btn-orange-solid btn-lg" routerLink="/cadastro">Criar conta</a>
-            <button type="button" class="cta-login-link" disabled title="Entrada indisponível no momento">Já tenho cadastro — Entrar</button>
+            <a class="cta-login-link" routerLink="/login">Já tenho cadastro — Entrar</a>
           </div>
         </div>
       </div>
@@ -485,7 +505,7 @@
           <h2 class="footer-col-title">Conta</h2>
           <ul class="footer-links">
             <li><a routerLink="/cadastro">Criar conta</a></li>
-            <li><button type="button" disabled title="Entrada indisponível no momento">Entrar</button></li>
+            <li><a routerLink="/login">Entrar</a></li>
           </ul>
         </div>
       </nav>

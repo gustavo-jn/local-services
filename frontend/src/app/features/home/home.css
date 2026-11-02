@@ -350,6 +350,8 @@ button:focus-visible {
 .link-login:hover {
   color: var(--coral-dark);
 }
+.account-name { max-width:160px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.account-error { max-width:220px; color:#a32018; font-size:.75rem; }
 
 .menu-toggle {
   display: none;
@@ -776,11 +778,6 @@ button:focus-visible {
   background-color: var(--surface-white);
   border: 1px solid var(--border-coral);
   color: var(--text-primary);
-}
-
-.ref4-card--span2 {
-  grid-column: 1 / -1;
-  min-height: 168px;
 }
 
 .ref4-card-top {
@@ -1477,10 +1474,6 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .ref4-card--span2 {
-    grid-column: auto;
-  }
-
   .trio-thumb {
     width: 82px;
     height: 82px;
@@ -1506,7 +1499,6 @@ button:focus-visible {
 /* Integração: estados acessíveis e contenção em telas pequenas. */
 button { font: inherit; }
 button:disabled { cursor: not-allowed; }
-:host(.motion-paused) *, :host(.motion-paused) *::before, :host(.motion-paused) *::after { animation-play-state: paused !important; }
 .btn:disabled:hover { transform: none; }
 .btn:disabled::after { display: none; }
 .header-actions button:disabled,
@@ -1519,9 +1511,6 @@ button:disabled { cursor: not-allowed; }
 }
 .footer-links button { color: var(--text-secondary); text-align: left; }
 .hero-main-row > *, .ref4-split-layout > *, .audience-grid > * { min-width: 0; }
-.motion-controls { display: flex; justify-content: flex-end; margin: 0 0 16px; }
-.motion-toggle { background: var(--surface-white); color: var(--text-primary); border: 1px solid var(--border-light); border-radius: var(--radius-btn); min-height: 44px; padding: 8px 14px; cursor: pointer; }
-.motion-toggle:focus-visible { outline: 3px solid var(--coral-dark); outline-offset: 3px; }
 @media (max-width: 820px) {
   .header-actions .link-login { background-color: var(--bg-page); }
 }

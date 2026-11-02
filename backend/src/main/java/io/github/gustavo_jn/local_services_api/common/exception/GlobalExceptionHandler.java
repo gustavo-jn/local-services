@@ -20,6 +20,12 @@ import io.github.gustavo_jn.local_services_api.conta.exception.EmailJaCadastrado
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	@ExceptionHandler(RegraNegocioException.class)
+	public ResponseEntity<ApiError> handleRegraNegocio(RegraNegocioException exception, HttpServletRequest request) {
+		return ResponseEntity.status(exception.getStatus()).body(new ApiError(
+				exception.getCode(), exception.getMessage(), exception.getFieldErrors(), Instant.now(), request.getRequestURI()));
+	}
+
 	@ExceptionHandler(CredenciaisInvalidasException.class)
 	public ResponseEntity<ApiError> handleCredenciaisInvalidas(
 			CredenciaisInvalidasException exception, HttpServletRequest request) {

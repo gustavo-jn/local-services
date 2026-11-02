@@ -1,0 +1,87 @@
+<span class="eyebrow">PERFIL PROFISSIONAL</span>
+<h1>{{ perfil() ? 'Seu trabalho, suas palavras.' : 'Vamos apresentar seu trabalho?' }}</h1>
+<p class="intro">
+  Conte um pouco sobre sua experiência e como você pode ajudar. O perfil profissional é opcional e
+  faz parte da sua mesma conta.
+</p>
+@if (carregando()) {
+  <p role="status">Carregando seu perfil…</p>
+} @else if (erroCarga()) {
+  <p class="error" role="alert">{{ erroCarga() }}</p>
+  <button class="button" type="button" (click)="carregar()">Tentar novamente</button>
+} @else {
+  @if (erro()) {
+    <p class="error" role="alert">{{ erro() }}</p>
+  }
+  @if (sucesso()) {
+    <p class="success" role="status">{{ sucesso() }}</p>
+  }
+  <section class="card" aria-labelledby="perfil-title">
+    <h2 id="perfil-title">{{ perfil() ? 'Editar perfil' : 'Criar perfil profissional' }}</h2>
+    <p>
+      Seu perfil permanece privado nesta primeira etapa. Você já pode preparar e salvar suas
+      informações.
+    </p>
+    <form [formGroup]="formulario" (ngSubmit)="salvar()" [attr.aria-busy]="enviando()" novalidate>
+      <fieldset [disabled]="enviando()">
+        <div class="field">
+          <label for="perfil-nome">Nome profissional</label
+          ><input
+            id="perfil-nome"
+            formControlName="nome"
+            autocomplete="organization"
+            placeholder="Seu nome ou nome do seu trabalho"
+            [attr.aria-invalid]="
+              formulario.controls.nome.invalid && formulario.controls.nome.touched
+            "
+            aria-describedby="perfil-nome-hint"
+          /><small
+            id="perfil-nome-hint"
+            [class.field-error]="
+              formulario.controls.nome.invalid && formulario.controls.nome.touched
+            "
+            >Use entre 2 e 120 caracteres.</small
+          >
+        </div>
+        <div class="field">
+          <label for="perfil-descricao">Sobre seu trabalho</label
+          ><textarea
+            id="perfil-descricao"
+            formControlName="descricao"
+            rows="6"
+            placeholder="Conte sobre sua experiência, seu cuidado com o serviço e o que você oferece."
+            [attr.aria-invalid]="
+              formulario.controls.descricao.invalid && formulario.controls.descricao.touched
+            "
+            aria-describedby="perfil-descricao-hint"
+          ></textarea
+          ><small
+            id="perfil-descricao-hint"
+            [class.field-error]="
+              formulario.controls.descricao.invalid && formulario.controls.descricao.touched
+            "
+            >Use entre 10 e 3.000 caracteres.
+            {{ formulario.controls.descricao.value.length }}/3.000</small
+          >
+        </div>
+        <label class="check"
+          ><input type="checkbox" formControlName="aceitaNovosServicos" />Estou aceitando novos
+          serviços</label
+        >
+        <button class="button" type="submit">
+          {{ enviando() ? 'Salvando…' : perfil() ? 'Salvar alterações' : 'Criar meu perfil' }}
+        </button>
+      </fieldset>
+    </form>
+  </section>
+  @if (perfil(); as dados) {
+    <section class="card" aria-labelledby="agenda-title">
+      <span class="tag">Perfil privado</span>
+      <h2 id="agenda-title">Agenda inicial criada</h2>
+      <p>
+        Seu perfil possui uma agenda no fuso de São Paulo ({{ dados.agenda.fusoReferencia }}). A
+        configuração de horários e os agendamentos serão disponibilizados em uma próxima etapa.
+      </p>
+    </section>
+  }
+}

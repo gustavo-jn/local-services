@@ -52,4 +52,8 @@ public class Usuario {
 		return senhaHash;
 	}
 
+	public void alterarNome(String nome) { this.nome = nome; }
+	public void alterarEmail(String email) { this.email = email; }
+	public void alterarSenhaHash(String senhaHash) { this.senhaHash = senhaHash; }
+
 }

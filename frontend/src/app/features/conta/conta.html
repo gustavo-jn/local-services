@@ -1,0 +1,151 @@
+<span class="eyebrow">MINHA CONTA</span>
+<h1>Seus dados, do seu jeito.</h1>
+<p class="intro">Mantenha suas informações atualizadas e cuide do acesso à sua conta.</p>
+@if (carregando()) {
+  <p role="status">Carregando seus dados…</p>
+} @else if (erroCarga()) {
+  <p class="error" role="alert">{{ erroCarga() }}</p>
+  <button class="button" type="button" (click)="carregar()">Tentar novamente</button>
+} @else {
+  @if (erro()) {
+    <p class="error" role="alert">{{ erro() }}</p>
+  }
+  @if (sucesso()) {
+    <p class="success" role="status">{{ sucesso() }}</p>
+  }
+  <section class="card" aria-labelledby="nome-title">
+    <h2 id="nome-title">Como podemos chamar você?</h2>
+    <p>Esse é o nome associado à sua conta.</p>
+    <form [formGroup]="nome" (ngSubmit)="salvar('nome')" novalidate>
+      <fieldset [disabled]="!!enviando()">
+        <div class="field">
+          <label for="conta-nome">Nome completo</label
+          ><input
+            id="conta-nome"
+            formControlName="nome"
+            autocomplete="name"
+            [attr.aria-invalid]="nome.controls.nome.invalid && nome.controls.nome.touched"
+            aria-describedby="nome-error"
+          />
+          <small
+            id="nome-error"
+            [class.field-error]="nome.controls.nome.invalid && nome.controls.nome.touched"
+            >Use entre 2 e 120 caracteres.</small
+          >
+        </div>
+        <button class="button" type="submit">
+          {{ enviando() === 'nome' ? 'Salvando…' : 'Salvar nome' }}
+        </button>
+      </fieldset>
+    </form>
+  </section>
+  <section class="card" aria-labelledby="email-title">
+    <h2 id="email-title">E-mail de acesso</h2>
+    <p>Confirme sua senha atual para trocar o endereço usado no login.</p>
+    <form [formGroup]="email" (ngSubmit)="salvar('email')" novalidate>
+      <fieldset [disabled]="!!enviando()">
+        <div class="field">
+          <label for="conta-email">E-mail</label
+          ><input
+            id="conta-email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            [attr.aria-invalid]="email.controls.email.invalid && email.controls.email.touched"
+            aria-describedby="email-error"
+          /><small
+            id="email-error"
+            [class.field-error]="email.controls.email.invalid && email.controls.email.touched"
+            >Informe um e-mail válido, com até 254 caracteres.</small
+          >
+        </div>
+        <div class="field">
+          <label for="email-senha">Senha atual</label
+          ><input
+            id="email-senha"
+            type="password"
+            formControlName="senhaAtual"
+            autocomplete="current-password"
+            [attr.aria-invalid]="
+              email.controls.senhaAtual.invalid && email.controls.senhaAtual.touched
+            "
+          />
+          @if (email.controls.senhaAtual.invalid && email.controls.senhaAtual.touched) {
+            <small class="field-error">Informe sua senha atual.</small>
+          }
+        </div>
+        <button class="button" type="submit">
+          {{ enviando() === 'email' ? 'Salvando…' : 'Alterar e-mail' }}
+        </button>
+      </fieldset>
+    </form>
+  </section>
+  <section class="card" aria-labelledby="senha-title">
+    <h2 id="senha-title">Trocar senha</h2>
+    <p>Escolha uma senha que você não utiliza em outros sites.</p>
+    <form [formGroup]="senha" (ngSubmit)="salvar('senha')" novalidate>
+      <fieldset [disabled]="!!enviando()">
+        <div class="field">
+          <label for="senha-atual">Senha atual</label
+          ><input
+            id="senha-atual"
+            type="password"
+            formControlName="senhaAtual"
+            autocomplete="current-password"
+            [attr.aria-invalid]="
+              senha.controls.senhaAtual.invalid && senha.controls.senhaAtual.touched
+            "
+          />
+          @if (senha.controls.senhaAtual.invalid && senha.controls.senhaAtual.touched) {
+            <small class="field-error">Informe sua senha atual.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="nova-senha">Nova senha</label
+          ><input
+            id="nova-senha"
+            type="password"
+            formControlName="novaSenha"
+            autocomplete="new-password"
+            [attr.aria-invalid]="
+              senha.controls.novaSenha.invalid && senha.controls.novaSenha.touched
+            "
+            aria-describedby="nova-senha-hint"
+          /><small
+            id="nova-senha-hint"
+            [class.field-error]="
+              senha.controls.novaSenha.invalid && senha.controls.novaSenha.touched
+            "
+            >{{
+              senha.controls.novaSenha.hasError('limiteSenha')
+                ? 'A senha ultrapassa o tamanho permitido. Use menos caracteres.'
+                : 'Use no mínimo 8 caracteres. Prefira uma senha longa e exclusiva.'
+            }}</small
+          >
+        </div>
+        <div class="field">
+          <label for="confirmacao-senha">Confirme a nova senha</label
+          ><input
+            id="confirmacao-senha"
+            type="password"
+            formControlName="confirmacao"
+            autocomplete="new-password"
+            [attr.aria-invalid]="
+              senha.controls.confirmacao.touched &&
+              (senha.controls.confirmacao.invalid || senha.hasError('senhasDiferentes'))
+            "
+          />
+          @if (
+            senha.controls.confirmacao.touched &&
+            (senha.controls.confirmacao.invalid || senha.hasError('senhasDiferentes'))
+          ) {
+            <small class="field-error">As senhas devem coincidir.</small>
+          }
+        </div>
+        <button class="button" type="submit">
+          {{ enviando() === 'senha' ? 'Salvando…' : 'Alterar senha' }}
+        </button>
+      </fieldset>
+    </form>
+  </section>
+}

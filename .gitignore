@@ -36,3 +36,6 @@ build/
 Local_Services_Checklist_Desenvolvimento.md
 Template_Relatorio_Tecnico_IFSP.pdf
 .env
+.jwt-secret.local
+frontend/test-results/
+frontend/playwright-report/

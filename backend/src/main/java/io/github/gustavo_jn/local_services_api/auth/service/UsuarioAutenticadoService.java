@@ -20,6 +20,13 @@ public class UsuarioAutenticadoService {
 
 	@Transactional(readOnly = true)
 	public UsuarioResponseDTO obter(String subject) {
+		UUID id = identificar(subject);
+		return usuarioRepository.findById(id)
+				.map(usuario -> new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail()))
+				.orElseThrow(() -> new BadCredentialsException("Autenticação necessária"));
+	}
+
+	public static UUID identificar(String subject) {
 		final UUID id;
 		try {
 			if (subject == null) {
@@ -30,8 +37,6 @@ public class UsuarioAutenticadoService {
 			throw new BadCredentialsException("Autenticação necessária");
 		}
 
-		return usuarioRepository.findById(id)
-				.map(usuario -> new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail()))
-				.orElseThrow(() -> new BadCredentialsException("Autenticação necessária"));
+		return id;
 	}
 }

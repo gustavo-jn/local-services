@@ -1,0 +1,464 @@
+{
+  "info": {
+    "name": "Local Services - primeira entrega",
+    "description": "Importar no Postman. Preserve cookies e configure email/senha localmente. Execute as operacoes de edicao individualmente; apos trocar email/senha, atualize as variaveis locais. Nao exporte credenciais reais. Consultar docs/api.md e docs/roteiro-demo.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "nome",
+      "value": "Usuario Exemplo",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "senha",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "novoEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "novaSenha",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "nomeProfissional",
+      "value": "Profissional Exemplo",
+      "type": "string"
+    },
+    {
+      "key": "descricao",
+      "value": "Trabalho ficticio para demonstrar o perfil profissional.",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!['GET', 'HEAD', 'OPTIONS'].includes(pm.request.method)) {",
+          "  pm.sendRequest({ url: pm.variables.get('baseUrl') + '/api/v1/auth/csrf', method: 'GET' }, (error, response) => {",
+          "    if (error || response.code !== 200) throw new Error('Nao foi possivel obter CSRF. Confira a API e os cookies.');",
+          "    const csrf = response.json();",
+          "    pm.request.headers.upsert({ key: csrf.headerName, value: csrf.token });",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Disponibilidade",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Obter CSRF",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/auth/csrf"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cadastrar conta",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"{{nome}}\",\n  \"email\": \"{{email}}\",\n  \"senha\": \"{{senha}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('Resposta sem credenciais', () => { const data = pm.response.json(); ['senha','senhaHash','token'].forEach(key => pm.expect(data).not.to.have.property(key)); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Entrar",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"senha\": \"{{senha}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta sem credenciais', () => { const data = pm.response.json(); ['senha','senhaHash','token'].forEach(key => pm.expect(data).not.to.have.property(key)); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuario autenticado",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/auth/me"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta sem credenciais', () => { const data = pm.response.json(); ['senha','senhaHash','token'].forEach(key => pm.expect(data).not.to.have.property(key)); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Minha conta",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/me"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta sem credenciais', () => { const data = pm.response.json(); ['senha','senhaHash','token'].forEach(key => pm.expect(data).not.to.have.property(key)); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alterar nome",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/me",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"{{nome}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta sem credenciais', () => { const data = pm.response.json(); ['senha','senhaHash','token'].forEach(key => pm.expect(data).not.to.have.property(key)); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alterar e-mail",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/me",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{novoEmail}}\",\n  \"senhaAtual\": \"{{senha}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta sem credenciais', () => { const data = pm.response.json(); ['senha','senhaHash','token'].forEach(key => pm.expect(data).not.to.have.property(key)); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alterar senha",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/me/senha",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"senhaAtual\": \"{{senha}}\",\n  \"novaSenha\": \"{{novaSenha}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 204', () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar perfil",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/me/perfil-profissional"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta sem credenciais', () => { const data = pm.response.json(); ['senha','senhaHash','token'].forEach(key => pm.expect(data).not.to.have.property(key)); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Criar perfil",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/me/perfil-profissional",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"{{nomeProfissional}}\",\n  \"descricao\": \"{{descricao}}\",\n  \"aceitaNovosServicos\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('Resposta sem credenciais', () => { const data = pm.response.json(); ['senha','senhaHash','token'].forEach(key => pm.expect(data).not.to.have.property(key)); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Editar perfil",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/me/perfil-profissional",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"{{nomeProfissional}}\",\n  \"descricao\": \"{{descricao}}\",\n  \"aceitaNovosServicos\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta sem credenciais', () => { const data = pm.response.json(); ['senha','senhaHash','token'].forEach(key => pm.expect(data).not.to.have.property(key)); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sair",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/auth/logout"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 204', () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

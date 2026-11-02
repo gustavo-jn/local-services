@@ -1,5 +1,5 @@
-<main class="register-page">
-  <header class="register-header">
+<main class="auth-page">
+  <header class="auth-header">
     <a class="brand" routerLink="/" aria-label="Local Services — voltar ao início">
       <span class="brand-mark" aria-hidden="true">
         <svg viewBox="0 0 28 28" width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -13,7 +13,7 @@
     <a class="back-link" routerLink="/">Voltar para o início</a>
   </header>
 
-  <div class="register-layout">
+  <div class="auth-layout">
     <aside class="welcome-panel" aria-labelledby="welcome-title">
       <span class="eyebrow">SERVIÇOS PERTO DE VOCÊ</span>
       <h1 id="welcome-title">Uma conta para criar novas conexões.</h1>
@@ -41,7 +41,7 @@
         <p>Preencha seus dados para começar.</p>
       </div>
 
-      <form [formGroup]="formulario" (ngSubmit)="enviar()" (input)="limparFeedback()" [attr.aria-busy]="enviando" novalidate>
+      <form [formGroup]="formulario" (ngSubmit)="enviar()" (input)="limparFeedback()" [attr.aria-busy]="enviando()" novalidate>
         <div class="field-group">
           <label for="nome">Nome completo</label>
           <input
@@ -60,8 +60,8 @@
             <span class="field-error" id="nome-error">O nome precisa ter pelo menos 2 caracteres.</span>
           } @else if (formulario.controls.nome.touched && formulario.controls.nome.hasError('maxlength')) {
             <span class="field-error" id="nome-error">O nome pode ter no máximo 120 caracteres.</span>
-          } @else if (errosServidor.nome) {
-            <span class="field-error" id="nome-error">{{ errosServidor.nome }}</span>
+          } @else if (errosServidor().nome) {
+            <span class="field-error" id="nome-error">{{ errosServidor().nome }}</span>
           }
         </div>
 
@@ -83,8 +83,8 @@
             <span class="field-error" id="email-error">Digite um e-mail válido.</span>
           } @else if (formulario.controls.email.touched && formulario.controls.email.hasError('maxlength')) {
             <span class="field-error" id="email-error">O e-mail pode ter no máximo 254 caracteres.</span>
-          } @else if (errosServidor.email) {
-            <span class="field-error" id="email-error">{{ errosServidor.email }}</span>
+          } @else if (errosServidor().email) {
+            <span class="field-error" id="email-error">{{ errosServidor().email }}</span>
           }
         </div>
 
@@ -106,8 +106,8 @@
             <span class="field-error" id="senha-error">A senha precisa ter pelo menos 8 caracteres.</span>
           } @else if (formulario.controls.senha.touched && formulario.controls.senha.hasError('senhaMuitoLonga')) {
             <span class="field-error" id="senha-error">A senha ultrapassa o limite permitido. Tente usar menos caracteres.</span>
-          } @else if (errosServidor.senha) {
-            <span class="field-error" id="senha-error">{{ errosServidor.senha }}</span>
+          } @else if (errosServidor().senha) {
+            <span class="field-error" id="senha-error">{{ errosServidor().senha }}</span>
           }
         </div>
 
@@ -129,26 +129,26 @@
           }
         </div>
 
-        <button class="submit-button" type="submit" [disabled]="enviando">
-          {{ enviando ? 'Enviando cadastro…' : 'Criar conta' }}
+        <button class="submit-button" type="submit" [disabled]="enviando()">
+          {{ enviando() ? 'Enviando cadastro…' : 'Criar conta' }}
         </button>
 
-        @if (mensagemErro) {
-          <p class="form-error" role="alert">{{ mensagemErro }}</p>
+        @if (mensagemErro()) {
+          <p class="form-error" role="alert">{{ mensagemErro() }}</p>
         }
 
-        @if (mensagemSucesso) {
+        @if (mensagemSucesso()) {
           <p class="form-status" role="status">
-            {{ mensagemSucesso }}
+            {{ mensagemSucesso() }}
           </p>
         }
       </form>
 
-      <p class="form-footer">Já tem uma conta? <span>O acesso será disponibilizado em uma próxima etapa.</span></p>
+      <p class="form-footer">Já tem uma conta? <a routerLink="/login">Entrar</a></p>
     </section>
   </div>
 
-  <footer class="register-footer">
+  <footer class="auth-footer">
     <span>© Local Services</span>
     <span>Uma plataforma para aproximar pessoas e serviços locais.</span>
   </footer>

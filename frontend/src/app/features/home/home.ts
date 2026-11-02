@@ -1,5 +1,7 @@
 import { afterNextRender, Component, DestroyRef, DOCUMENT, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/auth.service';
+import { erroApi } from '../../core/api.service';
 
 @Component({
   imports: [RouterLink],
@@ -9,18 +11,28 @@ import { RouterLink } from '@angular/router';
   host: {
     class: 'home-page',
     '[class.js-enabled]': 'revealEnabled()',
-    '[class.motion-paused]': 'motionPaused()',
     '(document:keydown.escape)': 'closeMenu(true)',
     '(document:click)': 'closeMenuOutside($event)',
   },
 })
 export class Home {
+  readonly auth = inject(AuthService);
+  readonly saindo = signal(false);
+  readonly erroConta = signal('');
+  sair(): void {
+    if(this.saindo()) return;
+    this.saindo.set(true); this.erroConta.set('');
+    this.auth.sair().subscribe({
+      next:()=>this.saindo.set(false),
+      error:erro=>{ this.saindo.set(false); this.erroConta.set(erroApi(erro)); },
+    });
+  }
   private readonly document = inject(DOCUMENT);
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly menuButton = viewChild<ElementRef<HTMLButtonElement>>('menuButton');
   private readonly cleanup: Array<() => void> = [];
-  private readonly images = ['manutencao', 'pintura', 'instalacoes', 'jardinagem'];
+  private readonly images = ['manutencao', 'pintura', 'pedreiro', 'instalacoes', 'jardinagem'];
   private window: Window | null = null;
   private photoTimer: number | undefined;
   private stepTimer: number | undefined;
@@ -28,6 +40,8 @@ export class Home {
   private stepsVisible = false;
   private photoHovered = false;
   private stepHovered = false;
+  private animationObserverAvailable = false;
+  private reducedMotion = false;
 
   protected readonly menuOpen = signal(false);
   protected readonly activeImage = signal('manutencao');
@@ -36,9 +50,6 @@ export class Home {
   protected readonly headerScrolled = signal(false);
   protected readonly scrollProgress = signal(0);
   protected readonly revealEnabled = signal(false);
-  protected readonly motionAvailable = signal(false);
-  protected readonly reducedMotion = signal(false);
-  protected readonly motionPaused = signal(false);
 
   constructor() {
     afterNextRender(() => this.initializeBrowserEffects());
@@ -63,11 +74,6 @@ export class Home {
     if (target && !this.element.nativeElement.querySelector('.site-header')?.contains(target)) {
       this.closeMenu();
     }
-  }
-
-  protected toggleMotion(): void {
-    this.motionPaused.update(paused => !paused);
-    this.syncTimers();
   }
 
   protected previewService(key: string): void {
@@ -116,9 +122,8 @@ export class Home {
       updateScroll();
     };
     const changeMotion = () => {
-      this.reducedMotion.set(reduced.matches);
+      this.reducedMotion = reduced.matches;
       if (reduced.matches) {
-        this.motionPaused.set(true);
         this.revealEnabled.set(false);
       }
       this.syncTimers();
@@ -134,7 +139,7 @@ export class Home {
     this.cleanup.push(() => this.document.removeEventListener('visibilitychange', visibility));
 
     if (typeof IntersectionObserver === 'undefined') return;
-    this.motionAvailable.set(true);
+    this.animationObserverAvailable = true;
 
     const revealElements = host.querySelectorAll<HTMLElement>('[data-reveal]');
     if (!reduced.matches) {
@@ -182,7 +187,7 @@ export class Home {
 
   private syncTimers(): void {
     this.stopTimers();
-    if (!this.window || !this.motionAvailable() || this.motionPaused() || this.reducedMotion() || this.document.hidden) return;
+    if (!this.window || !this.animationObserverAvailable || this.reducedMotion || this.document.hidden) return;
     if (this.photoVisible && !this.photoHovered) {
       this.photoTimer = this.window.setInterval(() => {
         const next = (this.images.indexOf(this.activeImage()) + 1) % this.images.length;

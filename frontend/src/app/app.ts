@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { AuthService } from './core/auth.service';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -7,4 +8,7 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App {}
+export class App implements OnInit {
+  private readonly auth = inject(AuthService);
+  ngOnInit(): void { this.auth.restaurar().subscribe(); }
+}

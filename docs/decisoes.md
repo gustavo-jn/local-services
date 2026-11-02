@@ -20,4 +20,16 @@
 - O token é enviado somente no cookie `LS_ACCESS_TOKEN` (`HttpOnly`, `Path=/api`, `SameSite=Lax`). `Secure` é configurável: falso no HTTP local e verdadeiro em HTTPS.
 - O endpoint de login continua protegido por CSRF. Após autenticar, o identificador da sessão e o token CSRF são renovados; o cliente deve buscar um novo CSRF antes da próxima alteração.
 - E-mail inexistente e senha incorreta retornam a mesma resposta 401. O endpoint não devolve o JWT no corpo.
-- Logout, consulta de usuário autenticado e a interface de login permanecem pendentes.
+- Consulta de usuário autenticado, login na interface e logout foram implementados na conclusão da primeira entrega, descrita abaixo.
+
+## 02/11/2026 - Conclusão do escopo P0–P6
+
+- A identidade é restaurada via `/auth/me`; a área `/app` usa guard no Angular e a autorização continua no servidor. O contrato não usa refresh token ou armazenamento JWT acessível ao JavaScript.
+- Logout é público quanto ao JWT para permitir sair mesmo após expiração, mas exige CSRF. Expira os cookies e invalida a sessão CSRF. Tokens copiados antes do logout/troca de senha continuam válidos até expirar; revogação é uma evolução separada.
+- O filtro CSRF recebe explicitamente o matcher padrão de métodos inseguros após a configuração. Isso impede a dispensa automática de CSRF que o Resource Server aplicaria a requisições reconhecidas pelo bearer resolver. Referência: [implementação oficial do Resource Server](https://github.com/spring-projects/spring-security/blob/main/config/src/main/java/org/springframework/security/config/annotation/web/configurers/oauth2/server/resource/OAuth2ResourceServerConfigurer.java). Testes verificam CSRF também com cookie JWT válido.
+- Alteração de e-mail e senha exige senha atual; mudanças sensíveis da mesma conta são serializadas com bloqueio pessimista. O e-mail continua protegido pela restrição única do banco.
+- Perfil profissional é opcional, privado e único por conta. A agenda é criada junto, em uma transação, no fuso `America/Sao_Paulo`. O titular não é aceito como entrada. A criação concorrente é serializada pela conta e reforçada por unicidade no banco.
+- Nome profissional: 2–120; descrição: 10–3000 caracteres, após trim. Aceite padrão verdadeiro; publicação falsa. Não foram antecipados catálogo, horários ou publicação.
+- PostgreSQL 17.10 foi fixado pelo digest da imagem já validada; V2 apenas acrescenta tabelas. O helper local lê `.env` e mantém uma chave aleatória em `.jwt-secret.local`, sem expor valores nos logs. Execução direta pelo IntelliJ continua usando as variáveis do processo.
+- Dados fictícios são restritos ao perfil Spring `demo` e não redefinem contas existentes. Testes de navegador usam dados exclusivos por execução, com limpeza limitada a esses identificadores.
+- Testes Playwright são locais e não publicam dados em serviços externos. Chrome instalado e Firefox do Playwright verificam larguras de 360, 768 e 1366 px.

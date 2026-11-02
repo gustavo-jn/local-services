@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormControl,
@@ -8,7 +9,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CadastroApiService } from '../data-access/cadastro-api.service';
 
 type CampoCadastro = 'nome' | 'email' | 'senha';
@@ -32,15 +33,17 @@ function senhasIguais(control: AbstractControl): ValidationErrors | null {
   selector: 'app-cadastro',
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './register.html',
-  styleUrl: './register.css',
+  styleUrl: '../auth-page.css',
 })
 export class Cadastro {
   private readonly cadastroApi = inject(CadastroApiService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
-  enviando = false;
-  mensagemErro = '';
-  mensagemSucesso = '';
-  errosServidor: Partial<Record<CampoCadastro, string>> = {};
+  readonly enviando = signal(false);
+  readonly mensagemErro = signal('');
+  readonly mensagemSucesso = signal('');
+  readonly errosServidor = signal<Partial<Record<CampoCadastro, string>>>({});
 
   readonly formulario = new FormGroup(
     {
@@ -68,33 +71,34 @@ export class Cadastro {
     this.limparFeedback();
     this.formulario.markAllAsTouched();
 
-    if (this.formulario.invalid || this.enviando) {
+    if (this.formulario.invalid || this.enviando()) {
       return;
     }
 
     const { nome, email, senha } = this.formulario.getRawValue();
-    this.enviando = true;
-    this.cadastroApi.cadastrar({ nome, email, senha }).subscribe({
+    this.enviando.set(true);
+    this.cadastroApi.cadastrar({ nome, email, senha }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this.enviando = false;
-        this.mensagemSucesso = 'Cadastro concluído. Você poderá acessar sua conta quando o login estiver disponível.';
+        this.enviando.set(false);
+        this.mensagemSucesso.set('Cadastro concluído! Você já pode entrar com seu e-mail e senha.');
         this.formulario.reset();
+        void this.router.navigate(['/login']);
       },
       error: erro => this.exibirErro(erro),
     });
   }
 
   limparFeedback(): void {
-    this.mensagemErro = '';
-    this.mensagemSucesso = '';
-    this.errosServidor = {};
+    this.mensagemErro.set('');
+    this.mensagemSucesso.set('');
+    this.errosServidor.set({});
   }
 
   private exibirErro(erro: unknown): void {
-    this.enviando = false;
+    this.enviando.set(false);
 
     if (!(erro instanceof HttpErrorResponse)) {
-      this.mensagemErro = 'Não foi possível concluir o cadastro. Tente novamente.';
+      this.mensagemErro.set('Não foi possível concluir o cadastro. Tente novamente.');
       return;
     }
 
@@ -105,26 +109,26 @@ export class Cadastro {
       if (erros && typeof erros === 'object') {
         for (const campo of ['nome', 'email', 'senha'] as const) {
           const mensagem = (erros as Record<string, unknown>)[campo];
-          if (typeof mensagem === 'string') this.errosServidor[campo] = mensagem;
+          if (typeof mensagem === 'string') this.errosServidor.update(atual => ({ ...atual, [campo]: mensagem }));
         }
       }
 
-      if (Object.keys(this.errosServidor).length === 0) {
-        this.mensagemErro = typeof resposta?.message === 'string'
+      if (Object.keys(this.errosServidor()).length === 0) {
+        this.mensagemErro.set(typeof resposta?.message === 'string'
           ? resposta.message
-          : 'Confira os dados informados e tente novamente.';
+          : 'Confira os dados informados e tente novamente.');
       }
       return;
     }
 
     if (erro.status === 403) {
-      this.mensagemErro = 'A sessão de segurança expirou. Atualize a página e tente novamente.';
+      this.mensagemErro.set('A sessão de segurança expirou. Tente novamente.');
     } else if (erro.status === 409) {
-      this.mensagemErro = 'Este e-mail já está cadastrado. Confira o endereço informado.';
+      this.mensagemErro.set('Este e-mail já está cadastrado. Confira o endereço informado.');
     } else if (erro.status === 0) {
-      this.mensagemErro = 'Não foi possível conectar ao servidor. Verifique se a API está em execução.';
+      this.mensagemErro.set('Não foi possível conectar ao servidor. Tente novamente em instantes.');
     } else {
-      this.mensagemErro = 'O cadastro não pôde ser concluído agora. Tente novamente mais tarde.';
+      this.mensagemErro.set('O cadastro não pôde ser concluído agora. Tente novamente mais tarde.');
     }
   }
 }
