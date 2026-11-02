@@ -1,0 +1,143 @@
+<main class="register-page">
+  <header class="register-header">
+    <a class="brand" routerLink="/" aria-label="Local Services — voltar ao início">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 28 28" width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="28" height="28" rx="6" fill="#B33E3E" />
+          <path d="M14 5.5C10.13 5.5 7 8.54 7 12.3C7 17.1 12.92 20.85 13.57 21.25C13.83 21.41 14.17 21.41 14.43 21.25C15.08 20.85 21 17.1 21 12.3C21 8.54 17.87 5.5 14 5.5Z" fill="#FAF8F5" />
+          <path d="M10.5 12.7L14 9.8L17.5 12.7V16C17.5 16.44 17.14 16.8 16.7 16.8H11.3C10.86 16.8 10.5 16.44 10.5 16V12.7Z" fill="#B33E3E" />
+        </svg>
+      </span>
+      <span>Local Services</span>
+    </a>
+    <a class="back-link" routerLink="/">Voltar para o início</a>
+  </header>
+
+  <div class="register-layout">
+    <aside class="welcome-panel" aria-labelledby="welcome-title">
+      <span class="eyebrow">SERVIÇOS PERTO DE VOCÊ</span>
+      <h1 id="welcome-title">Uma conta para criar novas conexões.</h1>
+      <p>
+        Encontre profissionais da sua região ou apresente o trabalho que você oferece.
+        Você pode fazer as duas coisas com a mesma conta.
+      </p>
+      <div class="welcome-note">
+        <span class="welcome-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+            <circle cx="12" cy="10" r="2.5" />
+          </svg>
+        </span>
+        <span>Conexões locais, feitas para o dia a dia.</span>
+      </div>
+      <span class="decorative-orbit orbit-one" aria-hidden="true"></span>
+      <span class="decorative-orbit orbit-two" aria-hidden="true"></span>
+    </aside>
+
+    <section class="form-panel" aria-labelledby="form-title">
+      <div class="form-heading">
+        <span class="eyebrow">BEM-VINDO(A)</span>
+        <h2 id="form-title">Crie sua conta</h2>
+        <p>Preencha seus dados para começar.</p>
+      </div>
+
+      <form [formGroup]="formulario" (ngSubmit)="enviar()" (input)="enviado = false" novalidate>
+        <div class="field-group">
+          <label for="nome">Nome completo</label>
+          <input
+            id="nome"
+            type="text"
+            formControlName="nome"
+            autocomplete="name"
+            placeholder="Como podemos chamar você?"
+            [attr.aria-invalid]="formulario.controls.nome.invalid && formulario.controls.nome.touched"
+            [attr.aria-describedby]="formulario.controls.nome.touched ? 'nome-hint nome-error' : 'nome-hint'"
+          />
+          <span class="field-hint" id="nome-hint">Use entre 2 e 120 caracteres.</span>
+          @if (formulario.controls.nome.touched && formulario.controls.nome.hasError('required')) {
+            <span class="field-error" id="nome-error">Informe seu nome.</span>
+          } @else if (formulario.controls.nome.touched && formulario.controls.nome.hasError('minlength')) {
+            <span class="field-error" id="nome-error">O nome precisa ter pelo menos 2 caracteres.</span>
+          } @else if (formulario.controls.nome.touched && formulario.controls.nome.hasError('maxlength')) {
+            <span class="field-error" id="nome-error">O nome pode ter no máximo 120 caracteres.</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label for="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            inputmode="email"
+            placeholder="voce@exemplo.com"
+            [attr.aria-invalid]="formulario.controls.email.invalid && formulario.controls.email.touched"
+            [attr.aria-describedby]="formulario.controls.email.touched ? 'email-error' : null"
+          />
+          @if (formulario.controls.email.touched && formulario.controls.email.hasError('required')) {
+            <span class="field-error" id="email-error">Informe seu e-mail.</span>
+          } @else if (formulario.controls.email.touched && formulario.controls.email.hasError('email')) {
+            <span class="field-error" id="email-error">Digite um e-mail válido.</span>
+          } @else if (formulario.controls.email.touched && formulario.controls.email.hasError('maxlength')) {
+            <span class="field-error" id="email-error">O e-mail pode ter no máximo 254 caracteres.</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label for="senha">Senha</label>
+          <input
+            id="senha"
+            type="password"
+            formControlName="senha"
+            autocomplete="new-password"
+            placeholder="Crie uma senha"
+            [attr.aria-invalid]="formulario.controls.senha.invalid && formulario.controls.senha.touched"
+            [attr.aria-describedby]="formulario.controls.senha.touched ? 'senha-hint senha-error' : 'senha-hint'"
+          />
+          <span class="field-hint" id="senha-hint">Mínimo de 8 caracteres.</span>
+          @if (formulario.controls.senha.touched && formulario.controls.senha.hasError('required')) {
+            <span class="field-error" id="senha-error">Informe uma senha.</span>
+          } @else if (formulario.controls.senha.touched && formulario.controls.senha.hasError('minlength')) {
+            <span class="field-error" id="senha-error">A senha precisa ter pelo menos 8 caracteres.</span>
+          } @else if (formulario.controls.senha.touched && formulario.controls.senha.hasError('senhaMuitoLonga')) {
+            <span class="field-error" id="senha-error">A senha ultrapassa o limite permitido. Tente usar menos caracteres.</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label for="confirmacao-senha">Confirme sua senha</label>
+          <input
+            id="confirmacao-senha"
+            type="password"
+            formControlName="confirmacaoSenha"
+            autocomplete="new-password"
+            placeholder="Digite a senha novamente"
+            [attr.aria-invalid]="(formulario.controls.confirmacaoSenha.invalid || formulario.hasError('senhasDiferentes')) && formulario.controls.confirmacaoSenha.touched"
+            [attr.aria-describedby]="formulario.controls.confirmacaoSenha.touched ? 'confirmacao-error' : null"
+          />
+          @if (formulario.controls.confirmacaoSenha.touched && formulario.controls.confirmacaoSenha.hasError('required')) {
+            <span class="field-error" id="confirmacao-error">Confirme sua senha.</span>
+          } @else if (formulario.controls.confirmacaoSenha.touched && formulario.hasError('senhasDiferentes')) {
+            <span class="field-error" id="confirmacao-error">As senhas não coincidem.</span>
+          }
+        </div>
+
+        <button class="submit-button" type="submit">Validar meus dados</button>
+
+        @if (enviado) {
+          <p class="form-status" role="status">
+            Os dados estão válidos. O envio do cadastro será habilitado quando a tela for conectada ao servidor.
+          </p>
+        }
+      </form>
+
+      <p class="form-footer">Já tem uma conta? <span>O acesso será disponibilizado em uma próxima etapa.</span></p>
+    </section>
+  </div>
+
+  <footer class="register-footer">
+    <span>© Local Services</span>
+    <span>Uma plataforma para aproximar pessoas e serviços locais.</span>
+  </footer>
+</main>
