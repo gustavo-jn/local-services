@@ -14,10 +14,19 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import io.github.gustavo_jn.local_services_api.auth.exception.CredenciaisInvalidasException;
 import io.github.gustavo_jn.local_services_api.conta.exception.EmailJaCadastradoException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+	@ExceptionHandler(CredenciaisInvalidasException.class)
+	public ResponseEntity<ApiError> handleCredenciaisInvalidas(
+			CredenciaisInvalidasException exception, HttpServletRequest request) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(
+				"INVALID_CREDENTIALS", "E-mail ou senha inválidos", Map.of(),
+				Instant.now(), request.getRequestURI()));
+	}
 
 	@ExceptionHandler(EmailJaCadastradoException.class)
 	public ResponseEntity<ApiError> handleEmailDuplicado(

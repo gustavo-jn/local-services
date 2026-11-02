@@ -36,8 +36,8 @@ Os testes ficam em `backend/src/test/java`, seguindo os mesmos pacotes das class
 
 ## Demais pacotes
 
-- `auth`: operações de autenticação e obtenção do token CSRF.
-- `config`: configuração de segurança, bcrypt e respostas dos filtros de segurança.
+- `auth`: obtenção do CSRF e endpoint de login; o serviço consulta credenciais do módulo de conta e emite o JWT.
+- `config`: configuração de segurança, BCrypt, assinatura/validação do JWT, leitura do cookie HttpOnly e respostas dos filtros.
 - `health`: verificação de disponibilidade da API.
 - `common.exception`: formato comum de erro e tratamento centralizado das exceções.
 
@@ -59,4 +59,4 @@ O `script.js` independente não é carregado pela aplicação. Suas interações
 
 ## Frontend - cadastro
 
-A rota `/cadastro` renderiza o componente em `frontend/src/app/features/auth/register/`. A tela possui campos para nome, e-mail, senha e confirmação, com validações locais alinhadas aos limites principais do backend. O serviço em `frontend/src/app/features/auth/data-access/` obtém CSRF e envia o cadastro pelo proxy local, sem incluir a confirmação de senha. A tela apresenta mensagens de sucesso e erros da API. A autenticação após o cadastro ainda não está disponível.
+A rota `/cadastro` renderiza o componente em `frontend/src/app/features/auth/register/`. A tela possui campos para nome, e-mail, senha e confirmação, com validações locais alinhadas aos limites principais do backend. O serviço em `frontend/src/app/features/auth/data-access/` obtém CSRF e envia o cadastro pelo proxy local, sem incluir a confirmação de senha. A tela apresenta mensagens de sucesso e erros da API. O cadastro não inicia uma sessão.

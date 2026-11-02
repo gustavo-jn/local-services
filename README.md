@@ -4,7 +4,7 @@ Plataforma web para divulgação, busca e contratação de serviços locais. O p
 
 ## Estado atual
 
-O backend Spring Boot executa com Java 25, PostgreSQL em Docker e migrações Flyway. Já oferece health check, obtenção de CSRF e cadastro de usuários. O frontend Angular apresenta a página inicial e a tela de cadastro em `/cadastro`, integrada ao endpoint de cadastro. O login ainda será implementado.
+O backend Spring Boot executa com Java 25, PostgreSQL em Docker e migrações Flyway. Já oferece health check, obtenção de CSRF, cadastro de usuários e o endpoint de login com JWT em cookie `HttpOnly`. O frontend Angular apresenta a página inicial e a tela de cadastro em `/cadastro`, integrada à API. A tela de login, a identificação do usuário autenticado e o logout ainda serão implementados.
 
 ## Tecnologias previstas
 
@@ -83,7 +83,18 @@ Os testes de integração dependem do PostgreSQL em execução e da variável `D
 .\backend\mvnw.cmd -f backend/pom.xml spring-boot:run
 ```
 
-Antes de iniciar, suba o banco com `docker compose up -d` e configure `DB_PASSWORD` no terminal ou na configuração de execução do IntelliJ. A senha deve corresponder à do PostgreSQL. O `.env` do Compose não é carregado automaticamente pelo Java.
+Antes de iniciar, suba o banco com `docker compose up -d` e configure `DB_PASSWORD` e `JWT_SECRET` no terminal ou na configuração de execução do IntelliJ. `DB_PASSWORD` deve corresponder à senha do PostgreSQL. `JWT_SECRET` deve ser uma chave aleatória em Base64 que decodifique para pelo menos 32 bytes; ela é obrigatória e não deve ser versionada. Para HTTP local, `JWT_COOKIE_SECURE=false`; em HTTPS, configure `JWT_COOKIE_SECURE=true`. O `.env` do Compose não é carregado automaticamente pelo Java.
+
+Para gerar uma chave Base64 local no PowerShell, execute e copie o resultado para a variável `JWT_SECRET` da configuração de execução:
+
+```powershell
+$bytes = New-Object byte[] 32
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($bytes)
+$jwtSecret = [Convert]::ToBase64String($bytes)
+$rng.Dispose()
+$jwtSecret
+```
 
 ## Frontend
 

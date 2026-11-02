@@ -19,6 +19,31 @@ Endereço local: `http://localhost:8080`. Os exemplos usam somente dados fictíc
 
 O cliente deve preservar o cookie `JSESSIONID` recebido e enviar o token no cabeçalho indicado nas operações de alteração. Na configuração atual, o token pertence à sessão e não autentica uma conta.
 
+## Login
+
+`POST /api/v1/auth/login` não exige JWT, mas exige um token CSRF válido e o cookie `JSESSIONID` da mesma sessão. Enviar `Content-Type: application/json`:
+
+```json
+{
+  "email": "usuario@example.com",
+  "senha": "Senha123!"
+}
+```
+
+Sucesso: HTTP 200, com ID, nome e e-mail no corpo. A resposta também define o cookie `LS_ACCESS_TOKEN`, com `HttpOnly`, `Path=/api`, `SameSite=Lax` e duração de 30 minutos. `Secure` é ativado quando `JWT_COOKIE_SECURE=true`; no ambiente local HTTP, use `false`. O JWT não aparece no JSON e não deve ser salvo em `localStorage`.
+
+O token usa HS256 e contém `sub` (UUID da conta), `iss`, `aud`, `iat` e `exp`. A API valida assinatura, emissor, audiência e validade temporal. O segredo vem de `JWT_SECRET`, em Base64, com pelo menos 32 bytes depois de decodificado.
+
+Após o login, a sessão CSRF é renovada. Antes da próxima operação de alteração, o cliente deve obter um novo token com `GET /api/v1/auth/csrf` e preservar o novo `JSESSIONID`.
+
+| HTTP | `code` | Situação |
+|---|---|---|
+| 400 | `VALIDATION_ERROR` | Corpo ou campos inválidos |
+| 401 | `INVALID_CREDENTIALS` | E-mail inexistente ou senha incorreta; a resposta é igual nos dois casos |
+| 403 | `INVALID_CSRF_TOKEN` | CSRF ausente, inválido ou sem a sessão correspondente |
+
+O endpoint não cria sessão de usuário no servidor; a autenticação subsequente usa o cookie JWT. Logout e `GET /api/v1/auth/me` ainda não estão implementados.
+
 ## Cadastro de usuário
 
 `POST /api/v1/auth/register` não exige login, mas exige CSRF válido e o cookie da sessão correspondente. Enviar `Content-Type: application/json`.
