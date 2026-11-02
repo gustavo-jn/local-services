@@ -115,13 +115,14 @@ button:focus-visible {
   transform: translateY(0);
 }
 
-@keyframes marqueeScroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
 }
 
 @keyframes indicatorPulse {
@@ -398,6 +399,38 @@ button:focus-visible {
 
 .hero-section {
   background-color: var(--bg-page);
+}
+
+.service-ribbon {
+  overflow: hidden;
+  border-block: 1px solid rgba(255, 255, 255, 0.16);
+  background-color: var(--coral-dark);
+  color: var(--surface-white);
+}
+
+.service-ribbon-track {
+  display: flex;
+  width: 100%;
+}
+
+.service-ribbon-group {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 24px;
+  padding: 13px 20px;
+  color: #fffaf6;
+  font-size: 0.76rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ribbon-separator {
+  color: var(--orange-highlight);
+  font-size: 0.9rem;
 }
 
 .hero-canvas {
